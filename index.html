@@ -2832,25 +2832,51 @@ function showSetup() {
 
 function parseConfig(text) {
   text = text.trim();
-  /* Extract the first balanced {...} block using brace counting,
-     so pasting the full Firebase snippet (with code after the object) works. */
-  var start = text.indexOf('{');
-  if (start === -1) throw new Error('找不到設定物件');
-  var depth = 0;
-  var end = -1;
-  for (var i = start; i < text.length; i++) {
-    if (text[i] === '{') depth++;
-    else if (text[i] === '}') { depth--; if (depth === 0) { end = i; break; } }
+  /* Try to locate firebaseConfig = { ... } first, then fall back to
+     trying every top-level { in the pasted text. This handles the case
+     where users paste the full Firebase snippet that includes
+     import { initializeApp } etc. */
+  function extractBalanced(str, from) {
+    var s = str.indexOf('{', from);
+    if (s === -1) return null;
+    var depth = 0;
+    for (var i = s; i < str.length; i++) {
+      if (str[i] === '{') depth++;
+      else if (str[i] === '}') { depth--; if (depth === 0) return str.substring(s, i + 1); }
+    }
+    return null;
   }
-  if (end === -1) throw new Error('設定格式不完整');
-  text = text.substring(start, end + 1);
-  /* Convert JS object notation to valid JSON: quote unquoted keys */
-  text = text.replace(/([{,]\s*)([a-zA-Z_$][\w$]*)\s*:/g, '$1"$2":');
-  /* Remove trailing commas before } or ] */
-  text = text.replace(/,(\s*[}\]])/g, '$1');
-  var cfg = JSON.parse(text);
-  if (!cfg.apiKey || !cfg.projectId) throw new Error('缺少 apiKey 或 projectId');
-  return cfg;
+  function toJSON(raw) {
+    raw = raw.replace(/([{,]\s*)([a-zA-Z_$][\w$]*)\s*:/g, '$1"$2":');
+    raw = raw.replace(/,(\s*[}\]])/g, '$1');
+    return raw;
+  }
+  /* Strategy 1: find "firebaseConfig" keyword and extract from there */
+  var cfgIdx = text.indexOf('firebaseConfig');
+  if (cfgIdx !== -1) {
+    var block = extractBalanced(text, cfgIdx);
+    if (block) {
+      try {
+        var cfg = JSON.parse(toJSON(block));
+        if (cfg.apiKey && cfg.projectId) return cfg;
+      } catch(e) {}
+    }
+  }
+  /* Strategy 2: find any { that contains apiKey */
+  var pos = 0;
+  var block2, cfg2;
+  while (pos < text.length) {
+    block2 = extractBalanced(text, pos);
+    if (!block2) break;
+    if (block2.indexOf('apiKey') !== -1) {
+      try {
+        cfg2 = JSON.parse(toJSON(block2));
+        if (cfg2.apiKey && cfg2.projectId) return cfg2;
+      } catch(e) {}
+    }
+    pos = text.indexOf('{', pos) + 1;
+  }
+  throw new Error('搵唔到有效嘅 Firebase 設定，請複製包含 apiKey 嘅設定碼');
 }
 
 document.getElementById('btnSaveConfig').addEventListener('click', function() {
