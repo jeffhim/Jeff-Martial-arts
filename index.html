@@ -1,0 +1,3225 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>營養師修武之路 — 止戈為武 上善若水</title>
+
+<!-- iOS Web App / PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="修武之路">
+<meta name="theme-color" content="#b8342e">
+<meta name="mobile-web-app-capable" content="yes">
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- App Icon (generated via canvas) -->
+<script>
+(function generateAppIcon() {
+  var sizes = [180, 152, 120, 76];
+
+  function drawIcon(size) {
+    var c = document.createElement('canvas');
+    c.width = size;
+    c.height = size;
+    var ctx = c.getContext('2d');
+    var cx = size / 2;
+    var cy = size / 2;
+
+    /* ---- Full bleed background ---- */
+    var bgGrad = ctx.createRadialGradient(cx * 0.6, cy * 0.4, 0, cx, cy, size * 0.85);
+    bgGrad.addColorStop(0, '#2a1a14');
+    bgGrad.addColorStop(0.5, '#1c100c');
+    bgGrad.addColorStop(1, '#0e0806');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, size, size);
+
+    /* ---- Subtle radial glow ---- */
+    var glow = ctx.createRadialGradient(cx, cy * 0.85, 0, cx, cy, size * 0.6);
+    glow.addColorStop(0, 'rgba(184,52,46,0.25)');
+    glow.addColorStop(0.6, 'rgba(184,52,46,0.06)');
+    glow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, size, size);
+
+    /* ---- Outer gold octagonal ring ---- */
+    var outerR = size * 0.43;
+    var innerR = size * 0.39;
+    var sides = 8;
+    var rot = -Math.PI / 8;
+    function polyPath(radius, n, rotation) {
+      ctx.beginPath();
+      for (var i = 0; i <= n; i++) {
+        var a = rotation + (2 * Math.PI * i) / n;
+        var px = cx + radius * Math.cos(a);
+        var py = cy + radius * Math.sin(a);
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+    }
+
+    /* Outer octagon fill */
+    ctx.save();
+    var ringGrad = ctx.createLinearGradient(0, size * 0.1, size, size * 0.9);
+    ringGrad.addColorStop(0, '#d4a843');
+    ringGrad.addColorStop(0.3, '#f0d68a');
+    ringGrad.addColorStop(0.5, '#c99b35');
+    ringGrad.addColorStop(0.7, '#f0d68a');
+    ringGrad.addColorStop(1, '#b8862a');
+    ctx.fillStyle = ringGrad;
+    polyPath(outerR, sides, rot);
+    ctx.fill();
+
+    /* Cut inner to make a ring */
+    ctx.globalCompositeOperation = 'destination-out';
+    polyPath(innerR, sides, rot);
+    ctx.fill();
+    ctx.restore();
+
+    /* ---- Inner circle (dark center) ---- */
+    ctx.save();
+    var innerBg = ctx.createRadialGradient(cx, cy * 0.9, 0, cx, cy, innerR);
+    innerBg.addColorStop(0, '#2a1510');
+    innerBg.addColorStop(1, '#140a07');
+    ctx.fillStyle = innerBg;
+    ctx.beginPath();
+    ctx.arc(cx, cy, innerR * 0.97, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    /* ---- Thin inner gold circle ---- */
+    ctx.save();
+    ctx.strokeStyle = '#c99b35';
+    ctx.globalAlpha = 0.5;
+    ctx.lineWidth = Math.max(1, size * 0.006);
+    ctx.beginPath();
+    ctx.arc(cx, cy, innerR * 0.85, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    /* ---- Corner accents (four small dots) ---- */
+    ctx.save();
+    ctx.fillStyle = '#c99b35';
+    ctx.globalAlpha = 0.35;
+    var dotR = size * 0.015;
+    var dotOff = size * 0.14;
+    [[dotOff, dotOff], [size - dotOff, dotOff], [dotOff, size - dotOff], [size - dotOff, size - dotOff]].forEach(function(p) {
+      ctx.beginPath();
+      ctx.arc(p[0], p[1], dotR, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.restore();
+
+    /* ---- Main character 武 ---- */
+    ctx.save();
+    /* Red glow behind character */
+    ctx.shadowColor = 'rgba(184,52,46,0.7)';
+    ctx.shadowBlur = size * 0.12;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.fillStyle = '#f0d68a';
+    ctx.font = '900 ' + Math.round(size * 0.44) + 'px "Noto Serif TC", "STKaiti", "KaiTi", "SimSun", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('武', cx, cy * 0.92);
+    ctx.restore();
+
+    /* White overlay for brightness */
+    ctx.save();
+    ctx.globalAlpha = 0.15;
+    ctx.fillStyle = '#fff';
+    ctx.font = '900 ' + Math.round(size * 0.44) + 'px "Noto Serif TC", "STKaiti", "KaiTi", "SimSun", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('武', cx, cy * 0.92);
+    ctx.restore();
+
+    /* ---- Bottom text 修武之路 ---- */
+    ctx.save();
+    ctx.fillStyle = '#c99b35';
+    ctx.globalAlpha = 0.9;
+    ctx.font = '700 ' + Math.round(size * 0.085) + 'px "Noto Sans TC", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    var chars = '修武之路'.split('');
+    var spacing = size * 0.1;
+    var startX = cx - (spacing * (chars.length - 1)) / 2;
+    chars.forEach(function(ch, i) {
+      ctx.fillText(ch, startX + i * spacing, cy + innerR * 0.68);
+    });
+    ctx.restore();
+
+    /* ---- Top arc decorative dots ---- */
+    ctx.save();
+    ctx.fillStyle = '#c99b35';
+    ctx.globalAlpha = 0.4;
+    for (var d = 0; d < 5; d++) {
+      var angle = -Math.PI / 2 + (d - 2) * 0.22;
+      var dr = innerR * 0.72;
+      ctx.beginPath();
+      ctx.arc(cx + dr * Math.cos(angle), cy + dr * Math.sin(angle), size * 0.008, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    return c.toDataURL('image/png');
+  }
+
+  /* Generate after fonts load for best rendering */
+  function createIcons() {
+    sizes.forEach(function(size) {
+      var url = drawIcon(size);
+      var link = document.createElement('link');
+      link.rel = 'apple-touch-icon';
+      if (size !== 180) link.setAttribute('sizes', size + 'x' + size);
+      link.href = url;
+      document.head.appendChild(link);
+
+      if (size === 180) {
+        var fav = document.createElement('link');
+        fav.rel = 'icon';
+        fav.type = 'image/png';
+        fav.href = url;
+        document.head.appendChild(fav);
+      }
+    });
+  }
+
+  /* Try to wait for fonts, fallback to immediate */
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(createIcons);
+  } else {
+    setTimeout(createIcons, 500);
+  }
+})();
+</script>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+<style>
+/* ====== CSS Variables ====== */
+:root {
+  --bg-primary: #f7f2ea;
+  --bg-secondary: #efe8db;
+  --bg-card: #fffdf8;
+  --bg-overlay: rgba(247, 242, 234, 0.97);
+  --text-primary: #2c1810;
+  --text-secondary: #6b4c3b;
+  --text-muted: #9a8070;
+  --accent: #b8342e;
+  --accent-hover: #9a2a25;
+  --accent-light: rgba(184, 52, 46, 0.08);
+  --gold: #b8933a;
+  --gold-dark: #96772e;
+  --gold-light: rgba(184, 147, 58, 0.12);
+  --border: #d4c8b0;
+  --border-light: #e8dfd0;
+  --shadow-sm: 0 2px 8px rgba(44,24,16,0.06);
+  --shadow-md: 0 8px 30px rgba(44,24,16,0.1);
+  --shadow-lg: 0 20px 60px rgba(44,24,16,0.15);
+  --danger: #c0392b;
+  --success: #27ae60;
+  --radius: 14px;
+  --radius-sm: 10px;
+}
+
+html.dark {
+  --bg-primary: #171210;
+  --bg-secondary: #211a16;
+  --bg-card: #281f1a;
+  --bg-overlay: rgba(23, 18, 16, 0.97);
+  --text-primary: #e8ddd0;
+  --text-secondary: #b8a898;
+  --text-muted: #7a6a5a;
+  --accent: #e04a3e;
+  --accent-hover: #c9403a;
+  --accent-light: rgba(224, 74, 62, 0.1);
+  --gold: #d4b06a;
+  --gold-dark: #c9a55a;
+  --gold-light: rgba(212, 176, 106, 0.1);
+  --border: #3d3228;
+  --border-light: #332a22;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+  --shadow-md: 0 8px 30px rgba(0,0,0,0.3);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.5);
+  --danger: #e74c3c;
+  --success: #2ecc71;
+}
+
+/* ====== Reset & Base ====== */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 0%, var(--accent-light) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 100%, var(--gold-light) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.hidden { display: none !important; }
+
+/* ====== Setup Screen ====== */
+.setup-screen {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.setup-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  max-width: 560px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: setupIn 0.5s ease;
+}
+
+@keyframes setupIn {
+  from { opacity: 0; transform: translateY(30px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+.setup-hero {
+  background: linear-gradient(135deg, var(--accent) 0%, #7a1a18 100%);
+  padding: 40px 30px 36px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.setup-hero::after {
+  content: '武';
+  position: absolute;
+  right: -10px;
+  bottom: -20px;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 130px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.06);
+  line-height: 1;
+}
+
+.setup-hero h1 {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 34px;
+  font-weight: 900;
+  color: #fff;
+  position: relative;
+  letter-spacing: 2px;
+}
+
+.setup-hero p {
+  color: rgba(255,255,255,0.75);
+  font-size: 14px;
+  margin-top: 6px;
+  position: relative;
+}
+
+.setup-body { padding: 28px 24px; }
+
+.setup-step {
+  margin-bottom: 22px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.setup-step:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--gold-light);
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 700;
+  margin-right: 8px;
+}
+
+.setup-step h3 {
+  display: inline;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.setup-step p, .setup-step ol {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  line-height: 1.7;
+}
+
+.setup-step ol { padding-left: 18px; }
+.setup-step ol li { margin-bottom: 4px; }
+
+.setup-step a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.setup-step a:hover { text-decoration: underline; }
+
+.setup-step code {
+  display: block;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 12px;
+  margin-top: 10px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-family: 'Courier New', monospace;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.config-textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: 'Courier New', monospace;
+  resize: vertical;
+  line-height: 1.5;
+  transition: border-color 0.2s;
+}
+
+.config-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.config-textarea::placeholder { color: var(--text-muted); }
+
+.setup-error {
+  color: var(--danger);
+  font-size: 13px;
+  margin-top: 8px;
+  display: none;
+}
+
+.setup-actions {
+  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ====== Buttons ====== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 24px;
+  border-radius: 12px;
+  border: none;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Noto Sans TC', sans-serif;
+  text-decoration: none;
+}
+
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+.btn-secondary {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: var(--border-light); }
+
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}
+.btn-danger:hover { background: rgba(192,57,43,0.08); }
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+  color: #fff;
+}
+.btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(184,147,58,0.3); }
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 15px;
+}
+
+.btn-icon:hover {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 8px; }
+.btn-full { width: 100%; }
+
+.btn:disabled, .btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ====== Header ====== */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-light);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+
+.logo {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1.2;
+  white-space: nowrap;
+  letter-spacing: 1px;
+}
+
+.sync-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--success);
+  background: rgba(39,174,96,0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.sync-badge.offline { color: var(--text-muted); background: var(--bg-secondary); }
+.sync-badge.syncing { color: var(--gold); background: var(--gold-light); }
+
+.sync-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.header-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+/* ====== Intro Banner ====== */
+.intro-banner {
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+  border-bottom: 1px solid var(--border-light);
+  padding: 14px 20px;
+  text-align: center;
+}
+
+.intro-banner p {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 2;
+  letter-spacing: 1.5px;
+}
+
+.intro-banner p:last-child {
+  color: var(--gold);
+}
+
+/* ====== Main Content ====== */
+.main {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px 14px 110px;
+}
+
+/* ====== Style Tabs ====== */
+.style-tabs {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 2px 0 14px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.style-tabs::-webkit-scrollbar { display: none; }
+
+.style-tab {
+  flex-shrink: 0;
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+
+.style-tab:hover { border-color: var(--gold); color: var(--text-primary); }
+
+.style-tab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.tab-count {
+  background: rgba(0,0,0,0.1);
+  padding: 0 7px;
+  border-radius: 10px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.style-tab.active .tab-count { background: rgba(255,255,255,0.2); }
+
+/* ====== Search ====== */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+.search-bar:focus-within { border-color: var(--accent); }
+.search-bar i { color: var(--text-muted); font-size: 14px; }
+.search-bar input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-family: 'Noto Sans TC', sans-serif;
+  outline: none;
+}
+.search-bar input::placeholder { color: var(--text-muted); }
+
+/* ====== Technique Cards ====== */
+.techniques-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.technique-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: all 0.25s;
+  cursor: pointer;
+  animation: cardIn 0.35s ease-out both;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+.technique-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border);
+  transform: translateY(-2px);
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  padding: 14px 16px;
+  gap: 12px;
+}
+
+.card-body { flex: 1; min-width: 0; }
+
+.card-name {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.card-style-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.card-preview {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 0 16px 12px;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-bottom {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 16px;
+  border-top: 1px solid var(--border-light);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.card-tag { display: flex; align-items: center; gap: 4px; }
+.card-tag i { font-size: 10px; }
+
+/* ====== Empty State ====== */
+.empty-state {
+  text-align: center;
+  padding: 56px 20px;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.empty-char {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 64px;
+  font-weight: 900;
+  color: var(--border);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.empty-state h3 {
+  color: var(--text-secondary);
+  font-weight: 400;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.empty-state p { color: var(--text-muted); font-size: 13px; }
+
+/* ====== FAB ====== */
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--accent) 0%, #8c2420 100%);
+  color: #fff;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(184,52,46,0.35);
+  transition: all 0.25s;
+  z-index: 90;
+}
+
+.fab:hover { transform: scale(1.08) translateY(-2px); box-shadow: 0 6px 28px rgba(184,52,46,0.45); }
+
+/* ====== Modal ====== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: overlayIn 0.2s ease;
+  overflow-y: auto;
+  padding: 20px 0 0;
+}
+
+@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  background: var(--bg-primary);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 620px;
+  max-height: 95vh;
+  overflow-y: auto;
+  animation: modalUp 0.3s cubic-bezier(0.16,1,0.3,1);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+@keyframes modalUp {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+
+@media (min-width: 640px) {
+  .modal-overlay { align-items: center; padding: 24px; }
+  .modal { border-radius: 20px; max-height: 90vh; }
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+  z-index: 1;
+}
+
+.modal-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.modal-close-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.modal-close-btn:hover { background: var(--accent-light); color: var(--accent); }
+
+.modal-content { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-light);
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-primary);
+}
+
+.modal-footer .btn { flex: 1; }
+
+/* ====== Form Fields ====== */
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+
+.field input:focus, .field textarea:focus, .field select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.field textarea { resize: vertical; min-height: 72px; line-height: 1.7; }
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
+
+/* ====== Video Section in Form ====== */
+.video-box {
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--bg-secondary);
+}
+
+.video-box-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vid-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.vid-tab {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+
+.vid-tab.active { background: var(--accent); color: #fff; }
+
+.vid-url-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: border-color 0.2s;
+}
+
+.vid-url-input:focus { outline: none; border-color: var(--accent); }
+
+.vid-preview {
+  margin-top: 10px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+  aspect-ratio: 16/9;
+}
+
+.vid-preview iframe, .vid-preview video {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.vid-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* ====== Detail View ====== */
+.detail-view { animation: fadeIn 0.3s ease; }
+
+.detail-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 14px;
+  padding: 5px 0;
+  border: none;
+  background: none;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: color 0.2s;
+}
+
+.detail-back-btn:hover { color: var(--accent); }
+
+.detail-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.detail-video {
+  aspect-ratio: 16/9;
+  background: #000;
+}
+
+.detail-video iframe, .detail-video video {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.detail-inner { padding: 22px 18px; }
+
+.detail-name {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  line-height: 1.4;
+  letter-spacing: 1px;
+}
+
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.detail-meta span { display: flex; align-items: center; gap: 4px; }
+
+.detail-section { margin-bottom: 18px; }
+
+.detail-section-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detail-section-body {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.detail-btns {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-light);
+}
+
+.detail-btns .btn { flex: 1; }
+
+/* ====== Moves (招式) Section in Detail ====== */
+.moves-section {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-light);
+}
+
+.moves-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.moves-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.moves-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+
+.moves-add-btn:hover { background: var(--accent); color: #fff; }
+
+.moves-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.move-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  transition: all 0.2s;
+  position: relative;
+}
+
+.move-item:hover {
+  border-color: var(--border);
+}
+
+.move-index {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--gold-light);
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.move-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.move-name {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.move-notes {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-top: 2px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.move-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--accent-light);
+  transition: all 0.2s;
+  word-break: break-all;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.move-link:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.move-link i { font-size: 10px; flex-shrink: 0; }
+
+.move-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.move-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 11px;
+}
+
+.move-action-btn:hover { background: var(--bg-card); color: var(--accent); }
+.move-action-btn.is-danger:hover { color: var(--danger); }
+
+.moves-empty {
+  text-align: center;
+  padding: 20px 10px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* Move list in form modal */
+.form-moves-box {
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--bg-secondary);
+}
+
+.form-moves-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-moves-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.form-move-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: var(--bg-card);
+}
+
+.form-move-idx {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--gold-light);
+  color: var(--gold);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-move-inputs {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-move-inputs input,
+.form-move-inputs textarea {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: border-color 0.2s;
+}
+
+.form-move-inputs input:focus,
+.form-move-inputs textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.form-move-inputs textarea {
+  resize: vertical;
+  min-height: 36px;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.form-move-rm {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 12px;
+}
+
+.form-move-rm:hover { background: rgba(192,57,43,0.1); color: var(--danger); }
+
+.form-moves-add-row {
+  display: flex;
+  gap: 6px;
+}
+
+.form-moves-add-row input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+
+.form-moves-add-row input:focus { outline: none; border-color: var(--accent); }
+
+/* Move inline edit form */
+.move-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+}
+
+.move-edit-form input,
+.move-edit-form textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: border-color 0.2s;
+}
+
+.move-edit-form input:focus,
+.move-edit-form textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.move-edit-form textarea {
+  resize: vertical;
+  min-height: 50px;
+  line-height: 1.6;
+}
+
+.move-edit-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.move-edit-actions .btn { padding: 7px 14px; font-size: 12px; }
+
+/* ====== Data Menu ====== */
+.dropdown-menu {
+  position: absolute;
+  top: 52px;
+  right: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  z-index: 150;
+  min-width: 175px;
+  padding: 5px;
+  animation: fadeIn 0.12s ease;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: background 0.12s;
+}
+
+.dropdown-item:hover { background: var(--bg-secondary); }
+.dropdown-item i { color: var(--text-muted); width: 18px; text-align: center; }
+.dropdown-item.is-danger { color: var(--danger); }
+.dropdown-item.is-danger i { color: var(--danger); }
+
+/* ====== Confirm Dialog ====== */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: overlayIn 0.12s ease;
+}
+
+.confirm-box {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 340px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+}
+
+.confirm-box p {
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
+
+.confirm-btns { display: flex; gap: 10px; }
+.confirm-btns .btn { flex: 1; }
+
+/* ====== Toast ====== */
+.toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  padding: 11px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  z-index: 500;
+  opacity: 0;
+  transition: all 0.25s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ====== Style Management ====== */
+.style-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+}
+
+.style-entry span { font-size: 14px; color: var(--text-primary); }
+
+.style-rm-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 12px;
+}
+
+.style-rm-btn:hover { background: rgba(192,57,43,0.1); color: var(--danger); }
+
+.add-style-row { display: flex; gap: 8px; }
+
+.add-style-row input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+
+.add-style-row input:focus { outline: none; border-color: var(--accent); }
+
+/* ====== Loading Spinner ====== */
+.spinner-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  z-index: 400;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.spinner-ring {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.spinner-text {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* ====== Storage Guide ====== */
+.guide-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  counter-reset: guide-step;
+}
+
+.guide-step {
+  position: relative;
+  padding-left: 38px;
+}
+
+.guide-step::before {
+  counter-increment: guide-step;
+  content: counter(guide-step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--gold-light);
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guide-step h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.guide-step p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.guide-tip {
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: var(--gold-light);
+  border-radius: 10px;
+  border-left: 3px solid var(--gold);
+}
+
+.guide-tip p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.guide-tip strong {
+  color: var(--gold-dark);
+}
+
+.guide-services {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+@media (max-width: 400px) { .guide-services { grid-template-columns: 1fr; } }
+
+.guide-svc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.guide-svc:hover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.guide-svc-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--accent-light);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.guide-svc-info { min-width: 0; }
+
+.guide-svc-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.guide-svc-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.link-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.link-hint:hover { color: var(--accent); }
+.link-hint i { margin-right: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ====== Loading Spinner ====== -->
+<div class="spinner-overlay" id="loadingScreen">
+  <div class="spinner-ring"></div>
+  <div class="spinner-text">載入中⋯</div>
+</div>
+
+<!-- ====== Setup Screen ====== -->
+<div class="setup-screen hidden" id="setupScreen">
+  <div class="setup-container">
+    <div class="setup-hero">
+      <h1>營養師修武之路</h1>
+      <p>設定雲端儲存，隨時隨地記錄你嘅武學心得</p>
+    </div>
+    <div class="setup-body">
+      <div class="setup-step">
+        <span class="step-number">1</span>
+        <h3>建立 Firebase 專案</h3>
+        <ol>
+          <li>去 <a href="https://console.firebase.google.com/" target="_blank" rel="noopener">Firebase Console</a> 登入 Google 帳號</li>
+          <li>撳「新增專案」→ 輸入名稱（例如 martial-arts）→ 建立</li>
+          <li>喺專案入面撳「新增應用程式」→ 選「網頁 &lt;/&gt;」</li>
+          <li>輸入名稱 → 撳「註冊」→ 複製 <b>firebaseConfig</b> 嘅內容</li>
+        </ol>
+      </div>
+
+      <div class="setup-step">
+        <span class="step-number">2</span>
+        <h3>開啟 Firestore 同匿名驗證</h3>
+        <ol>
+          <li>左邊選單 →「Firestore Database」→「建立資料庫」→ 選「測試模式」→ 啟用</li>
+          <li>左邊選單 →「Authentication」→「Sign-in method」→ 開啟「匿名」</li>
+          <li>去「Firestore」→「規則」，貼上以下規則並發佈：</li>
+        </ol>
+        <code>rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == userId;
+    }
+  }
+}</code>
+      </div>
+
+      <div class="setup-step">
+        <span class="step-number">3</span>
+        <h3>貼上你嘅 Firebase Config</h3>
+        <p>將 Firebase 嘅 config 物件貼喺下面（JSON 格式）：</p>
+        <textarea class="config-textarea" id="configInput" placeholder='{
+  "apiKey": "AIza...",
+  "authDomain": "xxx.firebaseapp.com",
+  "projectId": "xxx",
+  "storageBucket": "xxx.appspot.com",
+  "messagingSenderId": "123456",
+  "appId": "1:123456:web:abc..."
+}'></textarea>
+        <div class="setup-error" id="configError"></div>
+      </div>
+    </div>
+    <div class="setup-actions">
+      <button class="btn btn-primary btn-full" id="btnSaveConfig"><i class="fas fa-cloud"></i> 連接雲端儲存</button>
+      <button class="btn btn-secondary btn-full btn-sm" id="btnSkipSetup"><i class="fas fa-arrow-right"></i> 暫時跳過，用本地儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Main App ====== -->
+<div class="hidden" id="appRoot">
+  <div class="header">
+    <div class="header-left">
+      <div>
+        <div class="logo">營養師修武之路</div>
+      </div>
+      <div class="sync-badge" id="syncBadge">
+        <span class="sync-dot"></span>
+        <span id="syncLabel">本地模式</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon" id="homeBtn" title="返回主頁"><i class="fas fa-home"></i></button>
+      <button class="btn-icon" id="shareBtn" title="分享網址"><i class="fas fa-share-nodes"></i></button>
+      <button class="btn-icon" id="searchToggle" title="搜尋"><i class="fas fa-search"></i></button>
+      <button class="btn-icon" id="menuToggle" title="選單"><i class="fas fa-ellipsis-v"></i></button>
+    </div>
+  </div>
+
+  <div class="intro-banner" id="introBanner">
+    <p>古人練武為強身健體 保家為國</p>
+    <p>今有營養師希望透過修武以修身及身心</p>
+    <p>透過所練所習來平靜現實和內心的不穩</p>
+    <p>貫徹止戈為武 上善若水的哲學</p>
+  </div>
+
+  <div class="dropdown-menu hidden" id="dropMenu">
+    <button class="dropdown-item" id="btnExport"><i class="fas fa-file-export"></i>匯出 JSON</button>
+    <button class="dropdown-item" id="btnImport"><i class="fas fa-file-import"></i>匯入 JSON</button>
+    <button class="dropdown-item" id="btnStyles"><i class="fas fa-layer-group"></i>管理分類組別</button>
+    <button class="dropdown-item" id="btnStorageGuide"><i class="fas fa-photo-film"></i>媒體儲存教學</button>
+    <button class="dropdown-item" id="btnFirebaseSettings"><i class="fas fa-cloud"></i>雲端設定</button>
+    <button class="dropdown-item is-danger" id="btnClear"><i class="fas fa-trash"></i>清除所有資料</button>
+  </div>
+  <input type="file" id="importFile" accept=".json" class="hidden">
+
+  <div class="main" id="mainArea">
+    <div id="listView">
+      <div class="search-bar hidden" id="searchBar">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="搜尋套路名稱或內容…">
+      </div>
+      <div class="style-tabs" id="styleTabs"></div>
+      <div class="techniques-grid" id="techGrid"></div>
+    </div>
+    <div id="detailView" class="detail-view hidden"></div>
+  </div>
+
+  <button class="fab" id="fabBtn" title="新增套路"><i class="fas fa-plus"></i></button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+(function initDarkMode() {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.classList.add('dark');
+  }
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+    document.documentElement.classList.toggle('dark', e.matches);
+  });
+})();
+
+/* ============================================================
+   APP STATE
+   ============================================================ */
+var DEFAULT_STYLES = [];
+
+var state = {
+  firebaseConfig: null,
+  uid: null,
+  styles: [],
+  techniques: [],  /* Each item is a 套路 (routine), may contain moves array */
+  nextId: 1,
+  nextMoveId: 1,
+  filter: '全部',
+  search: '',
+  useFirebase: false
+};
+
+var db = null;
+var unsubTechniques = null;
+var unsubSettings = null;
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+function esc(str) {
+  if (!str) return '';
+  var d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function fmtDate(ts) {
+  var d = new Date(ts);
+  return d.getFullYear() + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + String(d.getDate()).padStart(2, '0');
+}
+
+function ytId(url) {
+  if (!url) return null;
+  var m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+function showToast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(function() { el.classList.remove('show'); }, 2200);
+}
+
+function genId() { return state.nextId++; }
+function genMoveId() { return state.nextMoveId++; }
+
+/* Ensure a routine has a moves array */
+function ensureMoves(t) {
+  if (!Array.isArray(t.moves)) t.moves = [];
+  return t;
+}
+
+/* ============================================================
+   LOCAL STORAGE HELPERS
+   ============================================================ */
+var _ls = (function() {
+  try {
+    var s = window['localStorage'];
+    s.setItem('__t', '1');
+    s.removeItem('__t');
+    return s;
+  } catch (e) { return null; }
+})();
+
+var hasLS = !!_ls;
+
+function saveLocal() {
+  if (!_ls) return;
+  try {
+    var obj = {
+      styles: state.styles,
+      techniques: state.techniques.map(function(t) {
+        var copy = Object.assign({}, t);
+        delete copy.videoBlob;
+        if (copy.moves) copy.moves = copy.moves.slice();
+        return copy;
+      }),
+      nextId: state.nextId,
+      nextMoveId: state.nextMoveId
+    };
+    _ls.setItem('wlmj_data', JSON.stringify(obj));
+  } catch (e) { /* quota exceeded */ }
+}
+
+function loadLocal() {
+  if (!_ls) return false;
+  try {
+    var raw = _ls.getItem('wlmj_data');
+    if (!raw) return false;
+    var obj = JSON.parse(raw);
+    state.styles = obj.styles || DEFAULT_STYLES.slice();
+    state.techniques = (obj.techniques || []).map(function(t) { return ensureMoves(t); });
+    state.nextId = obj.nextId || 1;
+    state.nextMoveId = obj.nextMoveId || 1;
+    return true;
+  } catch (e) { return false; }
+}
+
+function saveConfigLocal(cfg) {
+  if (!_ls) return;
+  _ls.setItem('wlmj_fb_config', JSON.stringify(cfg));
+}
+
+function loadConfigLocal() {
+  if (!_ls) return null;
+  try {
+    var raw = _ls.getItem('wlmj_fb_config');
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) { return null; }
+}
+
+function clearConfigLocal() {
+  if (_ls) _ls.removeItem('wlmj_fb_config');
+}
+
+/* ============================================================
+   FIREBASE LAYER
+   ============================================================ */
+function initFirebase(config) {
+  try {
+    if (!firebase || !firebase.initializeApp) {
+      throw new Error('Firebase SDK 載入失敗');
+    }
+    if (firebase.apps.length > 0) {
+      firebase.apps.forEach(function(a) { a.delete(); });
+    }
+    firebase.initializeApp(config);
+    db = firebase.firestore();
+    return true;
+  } catch (e) {
+    console.log('Firebase init error: ' + e.message);
+    return false;
+  }
+}
+
+function firebaseSignIn(callback) {
+  firebase.auth().signInAnonymously()
+    .then(function(cred) {
+      state.uid = cred.user.uid;
+      callback(null, cred.user.uid);
+    })
+    .catch(function(err) {
+      callback(err, null);
+    });
+}
+
+function fbDocPath(sub) {
+  return 'users/' + state.uid + '/' + sub;
+}
+
+function syncToFirestore() {
+  if (!state.useFirebase || !db || !state.uid) return;
+  db.doc(fbDocPath('config/settings')).set({
+    styles: state.styles,
+    nextId: state.nextId,
+    nextMoveId: state.nextMoveId,
+    updatedAt: Date.now()
+  }).catch(function() {});
+}
+
+function saveTechToFirestore(t) {
+  if (!state.useFirebase || !db || !state.uid) return;
+  var data = Object.assign({}, t);
+  delete data.videoBlob;
+  /* Ensure moves array is serializable */
+  if (data.moves) data.moves = data.moves.slice();
+  db.doc(fbDocPath('techniques/' + t.id)).set(data).catch(function() {});
+}
+
+function deleteTechFromFirestore(id) {
+  if (!state.useFirebase || !db || !state.uid) return;
+  db.doc(fbDocPath('techniques/' + id)).delete().catch(function() {});
+}
+
+function listenFirestore() {
+  if (!state.useFirebase || !db || !state.uid) return;
+
+  unsubSettings = db.doc(fbDocPath('config/settings')).onSnapshot(function(snap) {
+    if (snap.exists) {
+      var d = snap.data();
+      if (d.styles) state.styles = d.styles;
+      if (d.nextId && d.nextId > state.nextId) state.nextId = d.nextId;
+      if (d.nextMoveId && d.nextMoveId > state.nextMoveId) state.nextMoveId = d.nextMoveId;
+      renderTabs();
+      renderList();
+    }
+  });
+
+  unsubTechniques = db.collection(fbDocPath('techniques')).onSnapshot(function(snap) {
+    var techniques = [];
+    snap.forEach(function(doc) {
+      techniques.push(ensureMoves(doc.data()));
+    });
+    state.techniques = techniques;
+    if (state.techniques.length > 0) {
+      var maxId = Math.max.apply(null, state.techniques.map(function(t) { return t.id; }));
+      if (maxId >= state.nextId) state.nextId = maxId + 1;
+      /* Also recalc nextMoveId from all moves */
+      var maxMoveId = 0;
+      state.techniques.forEach(function(t) {
+        (t.moves || []).forEach(function(m) {
+          if (m.id > maxMoveId) maxMoveId = m.id;
+        });
+      });
+      if (maxMoveId >= state.nextMoveId) state.nextMoveId = maxMoveId + 1;
+    }
+    saveLocal();
+    renderTabs();
+    renderList();
+  });
+}
+
+function setSyncBadge(mode) {
+  var badge = document.getElementById('syncBadge');
+  var label = document.getElementById('syncLabel');
+  badge.className = 'sync-badge';
+  if (mode === 'cloud') {
+    badge.classList.remove('offline', 'syncing');
+    label.textContent = '雲端同步';
+  } else if (mode === 'syncing') {
+    badge.classList.add('syncing');
+    label.textContent = '同步中…';
+  } else {
+    badge.classList.add('offline');
+    label.textContent = '本地模式';
+  }
+}
+
+/* ============================================================
+   RENDER: STYLE TABS
+   ============================================================ */
+function renderTabs() {
+  var container = document.getElementById('styleTabs');
+  var total = state.techniques.length;
+  var html = '<button class="style-tab' + (state.filter === '全部' ? ' active' : '') + '" data-s="全部">全部 <span class="tab-count">' + total + '</span></button>';
+
+  state.styles.forEach(function(s) {
+    var n = state.techniques.filter(function(t) { return t.style === s; }).length;
+    html += '<button class="style-tab' + (state.filter === s ? ' active' : '') + '" data-s="' + esc(s) + '">' + esc(s) + ' <span class="tab-count">' + n + '</span></button>';
+  });
+
+  container.innerHTML = html;
+  container.querySelectorAll('.style-tab').forEach(function(b) {
+    b.addEventListener('click', function() {
+      state.filter = b.getAttribute('data-s');
+      renderTabs();
+      renderList();
+    });
+  });
+}
+
+/* ============================================================
+   RENDER: ROUTINE LIST (套路列表)
+   ============================================================ */
+function renderList() {
+  var el = document.getElementById('techGrid');
+  var list = state.techniques.slice();
+
+  if (state.filter !== '全部') {
+    list = list.filter(function(t) { return t.style === state.filter; });
+  }
+  if (state.search) {
+    var q = state.search.toLowerCase();
+    list = list.filter(function(t) {
+      var movesMatch = (t.moves || []).some(function(m) {
+        return m.name.toLowerCase().indexOf(q) >= 0 ||
+          (m.notes && m.notes.toLowerCase().indexOf(q) >= 0);
+      });
+      return t.name.toLowerCase().indexOf(q) >= 0 ||
+        (t.history && t.history.toLowerCase().indexOf(q) >= 0) ||
+        (t.notes && t.notes.toLowerCase().indexOf(q) >= 0) ||
+        t.style.toLowerCase().indexOf(q) >= 0 ||
+        movesMatch;
+    });
+  }
+
+  list.sort(function(a, b) { return b.updatedAt - a.updatedAt; });
+
+  if (list.length === 0) {
+    var msg = state.search ? '搵唔到相關嘅套路' : (state.filter !== '全部' ? '呢個分類組別暫時冇套路' : '未有任何套路記錄');
+    var sub = state.search ? '試下用其他關鍵字' : '撳右下角 + 開始記錄';
+    el.innerHTML = '<div class="empty-state"><div class="empty-char">武</div><h3>' + msg + '</h3><p>' + sub + '</p></div>';
+    return;
+  }
+
+  el.innerHTML = list.map(function(t, i) {
+    var preview = t.history || t.notes || '';
+    var hasVid = t.videoUrl || t.videoBlob;
+    var diff = t.difficulty ? '<span class="card-tag"><i class="fas fa-signal"></i> ' + esc(t.difficulty) + '</span>' : '';
+    var moveCount = (t.moves || []).length;
+    var movesTag = moveCount > 0 ? '<span class="card-tag"><i class="fas fa-list-ol"></i> ' + moveCount + ' 招</span>' : '';
+    return '<div class="technique-card" data-id="' + t.id + '" style="animation-delay:' + (i * 0.04) + 's">' +
+      '<div class="card-top">' +
+        '<div class="card-body"><div class="card-name">' + esc(t.name) + '</div><div class="card-style-label">' + esc(t.style) + '</div></div>' +
+      '</div>' +
+      (preview ? '<div class="card-preview">' + esc(preview) + '</div>' : '') +
+      '<div class="card-bottom">' +
+        (hasVid ? '<span class="card-tag"><i class="fas fa-video"></i> 有影片</span>' : '') +
+        movesTag +
+        diff +
+        '<span class="card-tag"><i class="fas fa-clock"></i> ' + fmtDate(t.updatedAt) + '</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  el.querySelectorAll('.technique-card').forEach(function(c) {
+    c.addEventListener('click', function() {
+      showDetail(parseInt(c.getAttribute('data-id'), 10));
+    });
+  });
+}
+
+/* ============================================================
+   DETAIL VIEW (套路詳情)
+   ============================================================ */
+function showDetail(id) {
+  var t = state.techniques.find(function(x) { return x.id === id; });
+  if (!t) return;
+  ensureMoves(t);
+
+  document.getElementById('listView').classList.add('hidden');
+  document.getElementById('fabBtn').classList.add('hidden');
+  var dv = document.getElementById('detailView');
+  dv.classList.remove('hidden');
+
+  renderDetailContent(t, dv);
+}
+
+function renderDetailContent(t, dv) {
+  var vid = '';
+  var yid = ytId(t.videoUrl);
+  if (yid) {
+    vid = '<div class="detail-video"><iframe src="https://www.youtube.com/embed/' + yid + '" allowfullscreen loading="lazy"></iframe></div>';
+  } else if (t.videoBlob) {
+    vid = '<div class="detail-video"><video src="' + t.videoBlob + '" controls playsinline></video></div>';
+  } else if (t.videoUrl) {
+    vid = '<div class="detail-video"><video src="' + esc(t.videoUrl) + '" controls playsinline></video></div>';
+  }
+
+  /* Build moves list HTML */
+  var movesHtml = '';
+  if (t.moves.length === 0) {
+    movesHtml = '<div class="moves-empty"><i class="fas fa-hand-point-up" style="margin-right:4px;"></i> 撳上面「新增招式」開始記錄</div>';
+  } else {
+    movesHtml = '<div class="moves-list" id="movesList">';
+    t.moves.forEach(function(m, idx) {
+      var linkHtml = '';
+      if (m.link) {
+        var linkLabel = m.link.length > 40 ? m.link.substring(0, 40) + '…' : m.link;
+        var linkIcon = 'fa-link';
+        var linkIconPrefix = 'fas';
+        if (/youtube\.com|youtu\.be/i.test(m.link)) { linkIcon = 'fa-youtube'; linkIconPrefix = 'fab'; }
+        else if (/\.(jpg|jpeg|png|gif|webp|svg|bmp)/i.test(m.link)) linkIcon = 'fa-image';
+        else if (/\.(mp4|mov|avi|webm|mkv)/i.test(m.link)) linkIcon = 'fa-video';
+        linkHtml = '<a class="move-link" href="' + esc(m.link) + '" target="_blank" rel="noopener"><i class="' + linkIconPrefix + ' ' + linkIcon + '"></i> ' + esc(linkLabel) + '</a>';
+      }
+      movesHtml += '<div class="move-item" data-move-id="' + m.id + '">' +
+        '<div class="move-index">' + (idx + 1) + '</div>' +
+        '<div class="move-body">' +
+          '<div class="move-name">' + esc(m.name) + '</div>' +
+          (m.notes ? '<div class="move-notes">' + esc(m.notes) + '</div>' : '') +
+          linkHtml +
+        '</div>' +
+        '<div class="move-actions">' +
+          (idx > 0 ? '<button class="move-action-btn" data-move-up="' + m.id + '" title="上移"><i class="fas fa-chevron-up"></i></button>' : '') +
+          (idx < t.moves.length - 1 ? '<button class="move-action-btn" data-move-down="' + m.id + '" title="下移"><i class="fas fa-chevron-down"></i></button>' : '') +
+          '<button class="move-action-btn" data-move-edit="' + m.id + '" title="編輯"><i class="fas fa-pen"></i></button>' +
+          '<button class="move-action-btn is-danger" data-move-del="' + m.id + '" title="刪除"><i class="fas fa-times"></i></button>' +
+        '</div>' +
+      '</div>';
+    });
+    movesHtml += '</div>';
+  }
+
+  dv.innerHTML =
+    '<button class="detail-back-btn" id="backBtn"><i class="fas fa-chevron-left"></i> 返回列表</button>' +
+    '<div class="detail-card">' + vid +
+      '<div class="detail-inner">' +
+        '<div class="detail-name">' + esc(t.name) + '</div>' +
+        '<div class="detail-meta">' +
+          '<span>' + esc(t.style) + '</span>' +
+          (t.difficulty ? '<span><i class="fas fa-signal"></i> ' + esc(t.difficulty) + '</span>' : '') +
+          '<span><i class="fas fa-calendar-plus"></i> ' + fmtDate(t.createdAt) + '</span>' +
+          '<span><i class="fas fa-pen-to-square"></i> ' + fmtDate(t.updatedAt) + '</span>' +
+        '</div>' +
+        (t.history ? '<div class="detail-section"><div class="detail-section-label"><i class="fas fa-scroll"></i> 歷史背景</div><div class="detail-section-body">' + esc(t.history) + '</div></div>' : '') +
+        (t.notes ? '<div class="detail-section"><div class="detail-section-label"><i class="fas fa-lightbulb"></i> 練習心得</div><div class="detail-section-body">' + esc(t.notes) + '</div></div>' : '') +
+        /* Moves section */
+        '<div class="moves-section">' +
+          '<div class="moves-header">' +
+            '<div class="moves-title"><i class="fas fa-list-ol"></i> 招式列表 (' + t.moves.length + ')</div>' +
+            '<button class="moves-add-btn" id="addMoveBtn"><i class="fas fa-plus"></i> 新增招式</button>' +
+          '</div>' +
+          '<div id="movesContainer">' + movesHtml + '</div>' +
+        '</div>' +
+        '<div class="detail-btns">' +
+          '<button class="btn btn-primary" id="editBtn"><i class="fas fa-pen"></i> 編輯套路</button>' +
+          '<button class="btn btn-danger" id="delBtn" style="flex:0 0 auto;padding:13px 18px;"><i class="fas fa-trash"></i></button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  /* Event bindings */
+  document.getElementById('backBtn').addEventListener('click', goBack);
+  document.getElementById('editBtn').addEventListener('click', function() { openForm(t); });
+  document.getElementById('delBtn').addEventListener('click', function() {
+    showConfirm('確定要刪除「' + t.name + '」？', function() {
+      state.techniques = state.techniques.filter(function(x) { return x.id !== t.id; });
+      deleteTechFromFirestore(t.id);
+      saveLocal();
+      showToast('已刪除');
+      goBack();
+    });
+  });
+
+  /* Add move button */
+  document.getElementById('addMoveBtn').addEventListener('click', function() {
+    showMoveForm(t, null, dv);
+  });
+
+  /* Move action buttons */
+  bindMoveActions(t, dv);
+}
+
+function bindMoveActions(t, dv) {
+  /* Edit move */
+  dv.querySelectorAll('[data-move-edit]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var mid = parseInt(btn.getAttribute('data-move-edit'), 10);
+      var move = t.moves.find(function(m) { return m.id === mid; });
+      if (move) showMoveForm(t, move, dv);
+    });
+  });
+
+  /* Delete move */
+  dv.querySelectorAll('[data-move-del]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var mid = parseInt(btn.getAttribute('data-move-del'), 10);
+      var move = t.moves.find(function(m) { return m.id === mid; });
+      if (!move) return;
+      showConfirm('確定要刪除招式「' + move.name + '」？', function() {
+        t.moves = t.moves.filter(function(m) { return m.id !== mid; });
+        t.updatedAt = Date.now();
+        saveTechToFirestore(t);
+        saveLocal();
+        showToast('已刪除招式');
+        renderDetailContent(t, dv);
+      });
+    });
+  });
+
+  /* Move up */
+  dv.querySelectorAll('[data-move-up]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var mid = parseInt(btn.getAttribute('data-move-up'), 10);
+      var idx = -1;
+      for (var i = 0; i < t.moves.length; i++) {
+        if (t.moves[i].id === mid) { idx = i; break; }
+      }
+      if (idx > 0) {
+        var tmp = t.moves[idx - 1];
+        t.moves[idx - 1] = t.moves[idx];
+        t.moves[idx] = tmp;
+        t.updatedAt = Date.now();
+        saveTechToFirestore(t);
+        saveLocal();
+        renderDetailContent(t, dv);
+      }
+    });
+  });
+
+  /* Move down */
+  dv.querySelectorAll('[data-move-down]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var mid = parseInt(btn.getAttribute('data-move-down'), 10);
+      var idx = -1;
+      for (var i = 0; i < t.moves.length; i++) {
+        if (t.moves[i].id === mid) { idx = i; break; }
+      }
+      if (idx >= 0 && idx < t.moves.length - 1) {
+        var tmp = t.moves[idx + 1];
+        t.moves[idx + 1] = t.moves[idx];
+        t.moves[idx] = tmp;
+        t.updatedAt = Date.now();
+        saveTechToFirestore(t);
+        saveLocal();
+        renderDetailContent(t, dv);
+      }
+    });
+  });
+}
+
+/* Show inline form to add/edit a move */
+function showMoveForm(routine, existingMove, dv) {
+  var container = document.getElementById('movesContainer');
+  var isEdit = !!existingMove;
+
+  /* Remove any existing edit forms */
+  var oldForm = container.querySelector('.move-edit-form');
+  if (oldForm) oldForm.remove();
+
+  var form = document.createElement('div');
+  form.className = 'move-edit-form';
+  form.innerHTML =
+    '<input type="text" id="moveNameInput" placeholder="招式名稱 *" value="' + (isEdit ? esc(existingMove.name) : '') + '">' +
+    '<textarea id="moveNotesInput" rows="2" placeholder="備註（選填）">' + (isEdit ? esc(existingMove.notes || '') : '') + '</textarea>' +
+    '<input type="url" id="moveLinkInput" placeholder="超連結（選填）— 圖片/影片網址" value="' + (isEdit ? esc(existingMove.link || '') : '') + '" style="font-size:14px;">' +
+    '<div class="link-hint" id="moveLinkHint"><i class="fas fa-circle-info"></i> 可上傳到 TeraBox（1TB 免費）再貼分享連結</div>' +
+    '<div class="move-edit-actions">' +
+      '<button class="btn btn-secondary btn-sm" id="moveCancelBtn">取消</button>' +
+      '<button class="btn btn-primary btn-sm" id="moveSaveBtn"><i class="fas fa-check"></i> ' + (isEdit ? '儲存' : '新增') + '</button>' +
+    '</div>';
+
+  if (isEdit) {
+    /* Replace the move item with the form */
+    var moveEl = container.querySelector('[data-move-id="' + existingMove.id + '"]');
+    if (moveEl) {
+      moveEl.style.display = 'none';
+      moveEl.parentNode.insertBefore(form, moveEl.nextSibling);
+    } else {
+      container.appendChild(form);
+    }
+  } else {
+    /* Insert at top of moves container */
+    container.insertBefore(form, container.firstChild);
+  }
+
+  var nameInput = document.getElementById('moveNameInput');
+  nameInput.focus();
+
+  function closeForm() {
+    form.remove();
+    if (isEdit) {
+      var moveEl2 = container.querySelector('[data-move-id="' + existingMove.id + '"]');
+      if (moveEl2) moveEl2.style.display = '';
+    }
+  }
+
+  document.getElementById('moveCancelBtn').addEventListener('click', closeForm);
+
+  document.getElementById('moveSaveBtn').addEventListener('click', function() {
+    var name = nameInput.value.trim();
+    if (!name) { showToast('請輸入招式名稱'); nameInput.focus(); return; }
+    var notes = document.getElementById('moveNotesInput').value.trim();
+    var link = document.getElementById('moveLinkInput').value.trim();
+
+    if (isEdit) {
+      existingMove.name = name;
+      existingMove.notes = notes;
+      existingMove.link = link;
+    } else {
+      routine.moves.push({
+        id: genMoveId(),
+        name: name,
+        notes: notes,
+        link: link
+      });
+    }
+
+    routine.updatedAt = Date.now();
+    saveTechToFirestore(routine);
+    syncToFirestore();
+    saveLocal();
+    showToast(isEdit ? '已儲存招式' : '已新增「' + name + '」');
+    renderDetailContent(routine, dv);
+  });
+
+  /* Enter to save on name input */
+  nameInput.addEventListener('keydown', function(ev) {
+    if (ev.key === 'Enter') {
+      ev.preventDefault();
+      document.getElementById('moveSaveBtn').click();
+    }
+    if (ev.key === 'Escape') closeForm();
+  });
+
+  document.getElementById('moveLinkHint').addEventListener('click', function() {
+    openStorageGuide();
+  });
+}
+
+function goBack() {
+  document.getElementById('detailView').classList.add('hidden');
+  document.getElementById('detailView').innerHTML = '';
+  document.getElementById('listView').classList.remove('hidden');
+  document.getElementById('fabBtn').classList.remove('hidden');
+  renderTabs();
+  renderList();
+}
+
+/* ============================================================
+   FORM MODAL (ADD / EDIT ROUTINE 套路)
+   ============================================================ */
+function openForm(existing) {
+  var isEdit = !!existing;
+  var currentBlob = existing ? (existing.videoBlob || null) : null;
+
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+
+  var opts = state.styles.map(function(s) {
+    return '<option value="' + esc(s) + '"' + (existing && existing.style === s ? ' selected' : '') + '>' + esc(s) + '</option>';
+  }).join('');
+  opts += '<option value="__new__">＋ 新增分類組別…</option>';
+
+  var diffOpts = ['', '入門', '初級', '中級', '高級', '大師'].map(function(d) {
+    var label = d || '未設定';
+    return '<option value="' + d + '"' + (existing && existing.difficulty === d ? ' selected' : '') + '>' + label + '</option>';
+  }).join('');
+
+  overlay.innerHTML =
+    '<div class="modal"><div class="modal-head"><div class="modal-title">' + (isEdit ? '編輯套路' : '新增套路') + '</div><button class="modal-close-btn" id="fmClose"><i class="fas fa-times"></i></button></div>' +
+    '<div class="modal-content">' +
+      '<div class="field"><label>套路名稱 *</label><input type="text" id="fName" value="' + (existing ? esc(existing.name) : '') + '" placeholder="例如：小念頭"></div>' +
+      '<div class="field-row">' +
+        '<div class="field"><label>所屬分類組別 *</label><select id="fStyle">' + opts + '</select><div id="newStyleRow" class="hidden" style="display:none;margin-top:8px;"><div class="add-style-row"><input type="text" id="fNewStyle" placeholder="輸入新分類組別名稱…" style="font-size:16px;"><button class="btn btn-primary btn-sm" type="button" id="fAddStyleBtn">確定</button></div></div></div>' +
+        '<div class="field"><label>難度</label><select id="fDiff">' + diffOpts + '</select></div>' +
+      '</div>' +
+      '<div class="field"><label>歷史背景</label><textarea id="fHistory" rows="3" placeholder="呢套路嘅來源、歷史典故…">' + (existing ? esc(existing.history) : '') + '</textarea></div>' +
+      '<div class="field"><label>練習心得</label><textarea id="fNotes" rows="4" placeholder="練習技巧、注意事項、感想…">' + (existing ? esc(existing.notes) : '') + '</textarea></div>' +
+      '<div class="video-box">' +
+        '<div class="video-box-title"><i class="fas fa-film"></i> 影片（選填）</div>' +
+        '<div class="vid-tabs"><button class="vid-tab active" data-vt="url">YouTube / 影片網址</button><button class="vid-tab" data-vt="file">上傳影片</button></div>' +
+        '<div id="vpUrl"><input type="text" class="vid-url-input" id="fVidUrl" placeholder="貼上 YouTube 或影片網址…" value="' + (existing && existing.videoUrl ? esc(existing.videoUrl) : '') + '"><div class="vid-hint">支援 YouTube、YouTube Shorts 連結</div><div id="vpUrlPreview"></div></div>' +
+        '<div id="vpFile" class="hidden"><label class="btn btn-secondary btn-full btn-sm" style="cursor:pointer;" id="fileLabel"><i class="fas fa-upload"></i> 選擇影片檔案<input type="file" accept="video/*" id="fVidFile" class="hidden"></label><div id="vpFilePreview"></div><div class="vid-hint">影片會暫存喺瀏覽器記憶體中（唔會上傳至雲端）</div></div>' +
+      '</div>' +
+      /* Moves section in form */
+      '<div class="form-moves-box">' +
+        '<div class="form-moves-title"><i class="fas fa-list-ol"></i> 招式列表（選填）</div>' +
+        '<div class="form-moves-list" id="fMovesList"></div>' +
+        '<div class="form-moves-add-row">' +
+          '<input type="text" id="fMoveNewName" placeholder="輸入招式名稱…">' +
+          '<button class="btn btn-primary btn-sm" type="button" id="fMoveAddBtn"><i class="fas fa-plus"></i> 加入</button>' +
+        '</div>' +
+        '<div class="vid-hint" style="margin-top:6px;">可以喺度直接加入套路中嘅招式，之後亦可以喺詳情頁面編輯</div>' +
+        '<div class="link-hint" id="fMovesGuideHint" style="margin-top:4px;"><i class="fas fa-circle-info"></i> 超連結可用 TeraBox（1TB 免費）儲存相片/影片 — 撳此睇教學</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="modal-footer">' +
+      (isEdit ? '<button class="btn btn-danger" id="fmDel" style="flex:0 0 auto;padding:13px 18px;"><i class="fas fa-trash"></i></button>' : '') +
+      '<button class="btn btn-secondary" id="fmCancel">取消</button>' +
+      '<button class="btn btn-primary" id="fmSave"><i class="fas fa-check"></i> ' + (isEdit ? '儲存' : '新增') + '</button>' +
+    '</div></div>';
+
+  document.body.appendChild(overlay);
+
+  /* ---- Moves management in form ---- */
+  var formMoves = [];
+  if (isEdit && existing.moves) {
+    formMoves = existing.moves.map(function(m) {
+      return { id: m.id, name: m.name, notes: m.notes || '', link: m.link || '' };
+    });
+  }
+
+  function renderFormMoves() {
+    var listEl = document.getElementById('fMovesList');
+    if (formMoves.length === 0) {
+      listEl.innerHTML = '';
+      return;
+    }
+    listEl.innerHTML = formMoves.map(function(m, idx) {
+      return '<div class="form-move-entry" data-fm-idx="' + idx + '">' +
+        '<div class="form-move-idx">' + (idx + 1) + '</div>' +
+        '<div class="form-move-inputs">' +
+          '<input type="text" data-fm-name="' + idx + '" value="' + esc(m.name) + '" placeholder="招式名稱">' +
+          '<textarea data-fm-notes="' + idx + '" rows="1" placeholder="備註（選填）">' + esc(m.notes) + '</textarea>' +
+          '<input type="url" data-fm-link="' + idx + '" value="' + esc(m.link) + '" placeholder="超連結（選填）— 圖片/影片網址" style="font-size:14px;">' +
+        '</div>' +
+        '<button class="form-move-rm" data-fm-rm="' + idx + '" title="刪除" type="button"><i class="fas fa-times"></i></button>' +
+      '</div>';
+    }).join('');
+
+    /* Bind remove buttons */
+    listEl.querySelectorAll('[data-fm-rm]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        syncFormMoveValues();
+        var rmIdx = parseInt(btn.getAttribute('data-fm-rm'), 10);
+        formMoves.splice(rmIdx, 1);
+        renderFormMoves();
+      });
+    });
+
+    /* Bind input changes to sync values on blur */
+    listEl.querySelectorAll('[data-fm-name]').forEach(function(inp) {
+      inp.addEventListener('blur', function() { syncFormMoveValues(); });
+    });
+    listEl.querySelectorAll('[data-fm-notes]').forEach(function(inp) {
+      inp.addEventListener('blur', function() { syncFormMoveValues(); });
+    });
+    listEl.querySelectorAll('[data-fm-link]').forEach(function(inp) {
+      inp.addEventListener('blur', function() { syncFormMoveValues(); });
+    });
+  }
+
+  function syncFormMoveValues() {
+    var listEl = document.getElementById('fMovesList');
+    listEl.querySelectorAll('[data-fm-name]').forEach(function(inp) {
+      var idx = parseInt(inp.getAttribute('data-fm-name'), 10);
+      if (formMoves[idx]) formMoves[idx].name = inp.value.trim();
+    });
+    listEl.querySelectorAll('[data-fm-notes]').forEach(function(inp) {
+      var idx = parseInt(inp.getAttribute('data-fm-notes'), 10);
+      if (formMoves[idx]) formMoves[idx].notes = inp.value.trim();
+    });
+    listEl.querySelectorAll('[data-fm-link]').forEach(function(inp) {
+      var idx = parseInt(inp.getAttribute('data-fm-link'), 10);
+      if (formMoves[idx]) formMoves[idx].link = inp.value.trim();
+    });
+  }
+
+  renderFormMoves();
+
+  document.getElementById('fMovesGuideHint').addEventListener('click', function() {
+    openStorageGuide();
+  });
+
+  document.getElementById('fMoveAddBtn').addEventListener('click', function() {
+    var nameInp = document.getElementById('fMoveNewName');
+    var v = nameInp.value.trim();
+    if (!v) { showToast('請輸入招式名稱'); nameInp.focus(); return; }
+    syncFormMoveValues();
+    formMoves.push({ id: 0, name: v, notes: '', link: '' });
+    nameInp.value = '';
+    renderFormMoves();
+    nameInp.focus();
+  });
+
+  document.getElementById('fMoveNewName').addEventListener('keydown', function(ev) {
+    if (ev.key === 'Enter') {
+      ev.preventDefault();
+      document.getElementById('fMoveAddBtn').click();
+    }
+  });
+
+  /* Inline add-new-style from form dropdown */
+  var fStyleSelect = document.getElementById('fStyle');
+  var newStyleRow = document.getElementById('newStyleRow');
+  fStyleSelect.addEventListener('change', function() {
+    if (fStyleSelect.value === '__new__') {
+      newStyleRow.style.display = 'block';
+      newStyleRow.classList.remove('hidden');
+      document.getElementById('fNewStyle').focus();
+    } else {
+      newStyleRow.style.display = 'none';
+    }
+  });
+  document.getElementById('fAddStyleBtn').addEventListener('click', function() {
+    var v = document.getElementById('fNewStyle').value.trim();
+    if (!v) return;
+    if (state.styles.indexOf(v) >= 0) {
+      showToast('「' + v + '」已存在');
+      fStyleSelect.value = v;
+      newStyleRow.style.display = 'none';
+      return;
+    }
+    state.styles.push(v);
+    syncToFirestore();
+    saveLocal();
+    var newOpts = '';
+    state.styles.forEach(function(s) {
+      newOpts += '<option value="' + esc(s) + '"' + (s === v ? ' selected' : '') + '>' + esc(s) + '</option>';
+    });
+    newOpts += '<option value="__new__">＋ 新增分類組別…</option>';
+    fStyleSelect.innerHTML = newOpts;
+    newStyleRow.style.display = 'none';
+    document.getElementById('fNewStyle').value = '';
+    showToast('已新增「' + v + '」');
+  });
+
+  /* Video tab switching */
+  overlay.querySelectorAll('.vid-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      overlay.querySelectorAll('.vid-tab').forEach(function(t2) { t2.classList.remove('active'); });
+      tab.classList.add('active');
+      var vt = tab.getAttribute('data-vt');
+      document.getElementById('vpUrl').classList.toggle('hidden', vt !== 'url');
+      document.getElementById('vpFile').classList.toggle('hidden', vt !== 'file');
+    });
+  });
+
+  /* YouTube preview */
+  var urlInput = document.getElementById('fVidUrl');
+  var previewTimer;
+  function refreshUrlPreview() {
+    clearTimeout(previewTimer);
+    previewTimer = setTimeout(function() {
+      var vid = ytId(urlInput.value);
+      var pe = document.getElementById('vpUrlPreview');
+      if (vid) {
+        pe.innerHTML = '<div class="vid-preview"><iframe src="https://www.youtube.com/embed/' + vid + '" allowfullscreen loading="lazy"></iframe></div>';
+      } else {
+        pe.innerHTML = '';
+      }
+    }, 400);
+  }
+  urlInput.addEventListener('input', refreshUrlPreview);
+  if (existing && existing.videoUrl) refreshUrlPreview();
+
+  /* If existing has blob, switch to file tab */
+  if (existing && existing.videoBlob) {
+    overlay.querySelectorAll('.vid-tab').forEach(function(t2) { t2.classList.remove('active'); });
+    overlay.querySelectorAll('.vid-tab')[1].classList.add('active');
+    document.getElementById('vpUrl').classList.add('hidden');
+    document.getElementById('vpFile').classList.remove('hidden');
+    document.getElementById('vpFilePreview').innerHTML = '<div class="vid-preview"><video src="' + existing.videoBlob + '" controls playsinline></video></div>';
+    var fl = document.getElementById('fileLabel');
+    fl.innerHTML = '<i class="fas fa-check"></i> 已有影片<input type="file" accept="video/*" id="fVidFile" class="hidden">';
+    bindFileInput();
+  }
+
+  function bindFileInput() {
+    document.getElementById('fVidFile').addEventListener('change', function() {
+      var file = this.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        currentBlob = e.target.result;
+        document.getElementById('vpFilePreview').innerHTML = '<div class="vid-preview"><video src="' + currentBlob + '" controls playsinline></video></div>';
+        var fl2 = document.getElementById('fileLabel');
+        fl2.innerHTML = '<i class="fas fa-check"></i> ' + esc(file.name) + '<input type="file" accept="video/*" id="fVidFile" class="hidden">';
+        bindFileInput();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  bindFileInput();
+
+  /* Close */
+  function closeForm() { overlay.remove(); }
+  document.getElementById('fmClose').addEventListener('click', closeForm);
+  document.getElementById('fmCancel').addEventListener('click', closeForm);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) closeForm(); });
+
+  /* Delete */
+  if (isEdit && document.getElementById('fmDel')) {
+    document.getElementById('fmDel').addEventListener('click', function() {
+      closeForm();
+      showConfirm('確定要刪除「' + existing.name + '」？', function() {
+        state.techniques = state.techniques.filter(function(x) { return x.id !== existing.id; });
+        deleteTechFromFirestore(existing.id);
+        saveLocal();
+        showToast('已刪除');
+        goBack();
+      });
+    });
+  }
+
+  /* Save */
+  document.getElementById('fmSave').addEventListener('click', function() {
+    var name = document.getElementById('fName').value.trim();
+    var style = document.getElementById('fStyle').value;
+    if (style === '__new__') { showToast('請先確認新增分類組別'); return; }
+    var diff = document.getElementById('fDiff').value;
+    var history = document.getElementById('fHistory').value.trim();
+    var notes = document.getElementById('fNotes').value.trim();
+    var vidUrl = document.getElementById('fVidUrl').value.trim();
+    var activeTab = overlay.querySelector('.vid-tab.active').getAttribute('data-vt');
+
+    if (!name) { showToast('請輸入套路名稱'); document.getElementById('fName').focus(); return; }
+
+    /* Sync form moves input values before saving */
+    syncFormMoveValues();
+    /* Filter out moves with empty names and assign IDs to new ones */
+    var savedMoves = formMoves.filter(function(m) { return m.name; }).map(function(m) {
+      return { id: m.id || genMoveId(), name: m.name, notes: m.notes || '', link: m.link || '' };
+    });
+
+    var now = Date.now();
+
+    if (isEdit) {
+      existing.name = name;
+      existing.style = style;
+      existing.difficulty = diff;
+      existing.history = history;
+      existing.notes = notes;
+      if (activeTab === 'url') { existing.videoUrl = vidUrl; if (vidUrl) existing.videoBlob = null; }
+      else { existing.videoBlob = currentBlob; if (currentBlob) existing.videoUrl = ''; }
+      existing.moves = savedMoves;
+      existing.updatedAt = now;
+      saveTechToFirestore(existing);
+      showToast('已儲存');
+    } else {
+      var tech = {
+        id: genId(),
+        name: name, style: style, difficulty: diff,
+        history: history, notes: notes,
+        videoUrl: activeTab === 'url' ? vidUrl : '',
+        videoBlob: activeTab === 'file' ? currentBlob : null,
+        moves: savedMoves,
+        createdAt: now, updatedAt: now
+      };
+      state.techniques.push(tech);
+      saveTechToFirestore(tech);
+      showToast('已新增「' + name + '」');
+    }
+
+    saveLocal();
+    syncToFirestore();
+    closeForm();
+
+    if (!document.getElementById('detailView').classList.contains('hidden')) {
+      var tid = existing ? existing.id : state.techniques[state.techniques.length - 1].id;
+      showDetail(tid);
+    } else {
+      renderTabs();
+      renderList();
+    }
+  });
+}
+
+/* ============================================================
+   CUSTOM CONFIRM
+   ============================================================ */
+function showConfirm(msg, onOk) {
+  var ov = document.createElement('div');
+  ov.className = 'confirm-overlay';
+  ov.innerHTML = '<div class="confirm-box"><p>' + msg + '</p><div class="confirm-btns"><button class="btn btn-secondary" id="cfCancel">取消</button><button class="btn btn-primary" style="background:var(--danger)" id="cfOk">確定</button></div></div>';
+  document.body.appendChild(ov);
+  ov.querySelector('#cfCancel').addEventListener('click', function() { ov.remove(); });
+  ov.querySelector('#cfOk').addEventListener('click', function() { ov.remove(); onOk(); });
+  ov.addEventListener('click', function(e) { if (e.target === ov) ov.remove(); });
+}
+
+/* ============================================================
+   MANAGE STYLES MODAL
+   ============================================================ */
+function openStylesModal() {
+  var ov = document.createElement('div');
+  ov.className = 'modal-overlay';
+  document.body.appendChild(ov);
+
+  function render() {
+    var items = state.styles.map(function(s, idx) {
+      var n = state.techniques.filter(function(t) { return t.style === s; }).length;
+      return '<div class="style-entry" data-idx="' + idx + '">' +
+        '<span class="style-name-display" style="flex:1;cursor:pointer;" data-rename="' + esc(s) + '">' + esc(s) + ' <small style="color:var(--text-muted)">(' + n + ')</small></span>' +
+        '<div style="display:flex;gap:4px;">' +
+          '<button class="style-rm-btn" data-edit="' + esc(s) + '" title="改名"><i class="fas fa-pen" style="font-size:11px;"></i></button>' +
+          (n === 0 ? '<button class="style-rm-btn" data-rm="' + esc(s) + '" title="刪除"><i class="fas fa-times"></i></button>' : '') +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    ov.innerHTML =
+      '<div class="modal"><div class="modal-head"><div class="modal-title">管理分類組別</div><button class="modal-close-btn" id="smClose"><i class="fas fa-times"></i></button></div>' +
+      '<div class="modal-content">' +
+        '<div class="add-style-row"><input type="text" id="newStyleIn" placeholder="新增分類組別…" style="font-size:16px;"><button class="btn btn-primary btn-sm" id="addStyleBtn">新增</button></div>' +
+        '<div style="display:flex;flex-direction:column;gap:8px;" id="stylesList">' + items + '</div>' +
+        '<p style="font-size:11px;color:var(--text-muted);">撳筆圖示可改名，只可刪除冇套路嘅分類組別</p>' +
+      '</div></div>';
+
+    function closeModal() {
+      ov.remove(); syncToFirestore(); saveLocal(); renderTabs(); renderList();
+    }
+
+    ov.querySelector('#smClose').addEventListener('click', closeModal);
+
+    ov.querySelector('#addStyleBtn').addEventListener('click', function() {
+      var v = document.getElementById('newStyleIn').value.trim();
+      if (!v) return;
+      if (state.styles.indexOf(v) >= 0) { showToast('已存在'); return; }
+      state.styles.push(v);
+      showToast('已新增「' + v + '」');
+      render();
+    });
+
+    /* Delete buttons */
+    ov.querySelectorAll('[data-rm]').forEach(function(b) {
+      b.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var s = b.getAttribute('data-rm');
+        state.styles = state.styles.filter(function(x) { return x !== s; });
+        if (state.filter === s) state.filter = '全部';
+        showToast('已刪除');
+        render();
+      });
+    });
+
+    /* Edit/rename buttons */
+    ov.querySelectorAll('[data-edit]').forEach(function(b) {
+      b.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var oldName = b.getAttribute('data-edit');
+        var entry = b.closest('.style-entry');
+        var nameSpan = entry.querySelector('.style-name-display');
+        var btnWrap = entry.querySelector('div:last-child');
+        nameSpan.style.display = 'none';
+        btnWrap.style.display = 'none';
+        var editRow = document.createElement('div');
+        editRow.className = 'add-style-row';
+        editRow.style.flex = '1';
+        editRow.innerHTML = '<input type="text" id="renameInput" value="' + esc(oldName) + '" style="font-size:16px;"><button class="btn btn-primary btn-sm" id="renameConfirm">確定</button><button class="btn btn-secondary btn-sm" id="renameCancel">取消</button>';
+        entry.insertBefore(editRow, nameSpan);
+        var renameInput = editRow.querySelector('#renameInput');
+        renameInput.focus();
+        renameInput.select();
+
+        function doRename() {
+          var newName = renameInput.value.trim();
+          if (!newName || newName === oldName) { render(); return; }
+          if (state.styles.indexOf(newName) >= 0) { showToast('「' + newName + '」已存在'); return; }
+          var idx2 = state.styles.indexOf(oldName);
+          if (idx2 >= 0) state.styles[idx2] = newName;
+          state.techniques.forEach(function(t) {
+            if (t.style === oldName) {
+              t.style = newName;
+              saveTechToFirestore(t);
+            }
+          });
+          if (state.filter === oldName) state.filter = newName;
+          showToast('已改名為「' + newName + '」');
+          render();
+        }
+
+        editRow.querySelector('#renameConfirm').addEventListener('click', doRename);
+        editRow.querySelector('#renameCancel').addEventListener('click', function() { render(); });
+        renameInput.addEventListener('keydown', function(ev) {
+          if (ev.key === 'Enter') doRename();
+          if (ev.key === 'Escape') render();
+        });
+      });
+    });
+
+    ov.addEventListener('click', function(e) {
+      if (e.target === ov) closeModal();
+    });
+  }
+  render();
+}
+
+/* ============================================================
+   MEDIA STORAGE GUIDE
+   ============================================================ */
+function openStorageGuide() {
+  var ov = document.createElement('div');
+  ov.className = 'modal-overlay';
+  ov.innerHTML =
+    '<div class="modal"><div class="modal-head"><div class="modal-title">媒體儲存教學</div><button class="modal-close-btn" id="sgClose"><i class="fas fa-times"></i></button></div>' +
+    '<div class="modal-content">' +
+      '<p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">你嘅套路文字記錄會自動同步到 Firebase 雲端。相片同影片可以上傳到免費雲端平台，再將分享連結貼到招式嘅「超連結」欄位。</p>' +
+
+      '<div style="margin-top:4px;font-size:13px;font-weight:600;color:var(--gold);letter-spacing:1px;"><i class="fas fa-star"></i> 推薦平台</div>' +
+      '<div class="guide-services">' +
+        '<a href="https://www.terabox.com" target="_blank" rel="noopener" class="guide-svc">' +
+          '<div class="guide-svc-icon"><i class="fas fa-cloud"></i></div>' +
+          '<div class="guide-svc-info"><div class="guide-svc-name">TeraBox</div><div class="guide-svc-desc">1TB 免費空間</div></div>' +
+        '</a>' +
+        '<a href="https://imgur.com" target="_blank" rel="noopener" class="guide-svc">' +
+          '<div class="guide-svc-icon"><i class="fas fa-image"></i></div>' +
+          '<div class="guide-svc-info"><div class="guide-svc-name">Imgur</div><div class="guide-svc-desc">無限圖片</div></div>' +
+        '</a>' +
+        '<a href="https://drive.google.com" target="_blank" rel="noopener" class="guide-svc">' +
+          '<div class="guide-svc-icon"><i class="fab fa-google-drive"></i></div>' +
+          '<div class="guide-svc-info"><div class="guide-svc-name">Google Drive</div><div class="guide-svc-desc">15GB 免費</div></div>' +
+        '</a>' +
+        '<a href="https://catbox.moe" target="_blank" rel="noopener" class="guide-svc">' +
+          '<div class="guide-svc-icon"><i class="fas fa-box-open"></i></div>' +
+          '<div class="guide-svc-info"><div class="guide-svc-name">Catbox</div><div class="guide-svc-desc">200MB/檔 永久</div></div>' +
+        '</a>' +
+      '</div>' +
+
+      '<div style="margin-top:20px;font-size:13px;font-weight:600;color:var(--gold);letter-spacing:1px;"><i class="fas fa-cloud"></i> TeraBox 使用教學（1TB 免費）</div>' +
+      '<div class="guide-steps" style="margin-top:12px;">' +
+        '<div class="guide-step"><h4>註冊帳號</h4><p>去 <a href="https://www.terabox.com" target="_blank" rel="noopener" style="color:var(--accent);">terabox.com</a>，用 Google / Facebook / Apple ID 快速註冊，或者下載 TeraBox App</p></div>' +
+        '<div class="guide-step"><h4>上傳相片或影片</h4><p>撳「上傳」按鈕，選擇你嘅武術練習相片或影片。建議建立資料夾分類（例如：詠春/小念頭）</p></div>' +
+        '<div class="guide-step"><h4>複製分享連結</h4><p>右撳檔案（或者撳「...」選單）→ 選「分享」→ 建立連結 → 複製連結</p></div>' +
+        '<div class="guide-step"><h4>貼到招式超連結</h4><p>返去本 App，編輯招式時將連結貼到「超連結」欄位。之後撳連結就可以直接開啟睇到你嘅相片/影片</p></div>' +
+      '</div>' +
+
+      '<div class="guide-tip">' +
+        '<p><strong><i class="fas fa-lightbulb"></i> 小貼士：</strong></p>' +
+        '<p>- TeraBox 提供 <strong>1TB（1024GB）免費空間</strong>，夠你儲存大量練習片段</p>' +
+        '<p>- 影片建議用 720p 拍攝，平衡畫質同檔案大小</p>' +
+        '<p>- 純圖片可以用 Imgur（無限免費），上傳即有直接連結</p>' +
+        '<p>- Google Drive 適合已有 Google 帳號嘅用家（15GB 免費）</p>' +
+      '</div>' +
+    '</div></div>';
+
+  document.body.appendChild(ov);
+
+  function closeGuide() { ov.remove(); }
+  ov.querySelector('#sgClose').addEventListener('click', closeGuide);
+  ov.addEventListener('click', function(e) { if (e.target === ov) closeGuide(); });
+}
+
+/* ============================================================
+   EXPORT / IMPORT
+   ============================================================ */
+function doExport() {
+  var obj = {
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    styles: state.styles,
+    techniques: state.techniques.map(function(t) {
+      var c = Object.assign({}, t);
+      delete c.videoBlob;
+      if (c.moves) c.moves = c.moves.slice();
+      return c;
+    }),
+    nextId: state.nextId,
+    nextMoveId: state.nextMoveId
+  };
+  var blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = '營養師修武之路_' + fmtDate(Date.now()).replace(/\//g, '-') + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('已匯出');
+}
+
+function doImport(file) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var d = JSON.parse(e.target.result);
+      if (!d.techniques) { showToast('檔案格式唔啱'); return; }
+      state.styles = d.styles || DEFAULT_STYLES.slice();
+      state.techniques = (d.techniques || []).map(function(t) { return ensureMoves(t); });
+      state.nextId = d.nextId || (Math.max.apply(null, [0].concat(d.techniques.map(function(t) { return t.id; }))) + 1);
+      state.nextMoveId = d.nextMoveId || 1;
+      /* Recalc nextMoveId from imported data */
+      var maxMoveId = 0;
+      state.techniques.forEach(function(t) {
+        (t.moves || []).forEach(function(m) {
+          if (m.id > maxMoveId) maxMoveId = m.id;
+        });
+      });
+      if (maxMoveId >= state.nextMoveId) state.nextMoveId = maxMoveId + 1;
+      state.filter = '全部';
+
+      if (state.useFirebase) {
+        syncToFirestore();
+        state.techniques.forEach(function(t) { saveTechToFirestore(t); });
+      }
+      saveLocal();
+      renderTabs();
+      renderList();
+      showToast('已匯入 ' + d.techniques.length + ' 個套路');
+    } catch (err) {
+      showToast('匯入失敗：格式錯誤');
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* ============================================================
+   FIREBASE SETUP SCREEN
+   ============================================================ */
+function showSetup() {
+  document.getElementById('loadingScreen').classList.add('hidden');
+  document.getElementById('setupScreen').classList.remove('hidden');
+  document.getElementById('appRoot').classList.add('hidden');
+
+  var saved = loadConfigLocal();
+  if (saved) {
+    document.getElementById('configInput').value = JSON.stringify(saved, null, 2);
+  }
+}
+
+function parseConfig(text) {
+  text = text.trim();
+  var match = text.match(/\{[\s\S]*\}/);
+  if (match) text = match[0];
+  text = text.replace(/,(\s*[}\]])/g, '$1');
+  var cfg = JSON.parse(text);
+  if (!cfg.apiKey || !cfg.projectId) throw new Error('缺少 apiKey 或 projectId');
+  return cfg;
+}
+
+document.getElementById('btnSaveConfig').addEventListener('click', function() {
+  var raw = document.getElementById('configInput').value;
+  var errEl = document.getElementById('configError');
+  errEl.style.display = 'none';
+
+  try {
+    var cfg = parseConfig(raw);
+    saveConfigLocal(cfg);
+    state.firebaseConfig = cfg;
+    startApp(true);
+  } catch (e) {
+    errEl.textContent = '設定格式有誤：' + e.message;
+    errEl.style.display = 'block';
+  }
+});
+
+document.getElementById('btnSkipSetup').addEventListener('click', function() {
+  startApp(false);
+});
+
+/* ============================================================
+   START THE APP
+   ============================================================ */
+function startApp(tryFirebase) {
+  document.getElementById('setupScreen').classList.add('hidden');
+  document.getElementById('loadingScreen').classList.remove('hidden');
+
+  if (!loadLocal()) {
+    state.styles = DEFAULT_STYLES.slice();
+    state.techniques = [];
+    state.nextId = 1;
+    state.nextMoveId = 1;
+  }
+
+  if (tryFirebase && state.firebaseConfig) {
+    var ok = initFirebase(state.firebaseConfig);
+    if (ok) {
+      setSyncBadge('syncing');
+      firebaseSignIn(function(err) {
+        if (err) {
+          console.log('Auth error: ' + err.message);
+          state.useFirebase = false;
+          setSyncBadge('offline');
+          showApp();
+          showToast('Firebase 登入失敗，使用本地模式');
+        } else {
+          state.useFirebase = true;
+          syncToFirestore();
+          state.techniques.forEach(function(t) { saveTechToFirestore(t); });
+          listenFirestore();
+          setSyncBadge('cloud');
+          showApp();
+        }
+      });
+      return;
+    }
+  }
+
+  state.useFirebase = false;
+  setSyncBadge('offline');
+  showApp();
+}
+
+function showApp() {
+  document.getElementById('loadingScreen').classList.add('hidden');
+  document.getElementById('appRoot').classList.remove('hidden');
+  renderTabs();
+  renderList();
+}
+
+/* ============================================================
+   EVENT BINDINGS
+   ============================================================ */
+document.getElementById('fabBtn').addEventListener('click', function() { openForm(null); });
+
+/* Home button */
+document.getElementById('homeBtn').addEventListener('click', function() {
+  var dv = document.getElementById('detailView');
+  if (!dv.classList.contains('hidden')) {
+    goBack();
+  } else {
+    state.filter = '全部';
+    state.search = '';
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchBar').classList.add('hidden');
+    renderTabs();
+    renderList();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+
+/* Share button */
+document.getElementById('shareBtn').addEventListener('click', function() {
+  var url = window.location.href;
+  if (navigator.share) {
+    navigator.share({
+      title: '營養師修武之路 — 武術套路記錄簿',
+      text: '一齊用呢個免費 App 記錄武術練習！',
+      url: url
+    }).catch(function() {});
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(function() {
+      showToast('已複製網址到剪貼簿');
+    }).catch(function() {
+      showToast('複製失敗，請手動複製網址');
+    });
+  } else {
+    showToast('你嘅瀏覽器唔支援分享功能');
+  }
+});
+
+/* Search */
+document.getElementById('searchToggle').addEventListener('click', function() {
+  var bar = document.getElementById('searchBar');
+  bar.classList.toggle('hidden');
+  if (!bar.classList.contains('hidden')) {
+    document.getElementById('searchInput').focus();
+  } else {
+    document.getElementById('searchInput').value = '';
+    state.search = '';
+    renderList();
+  }
+});
+
+document.getElementById('searchInput').addEventListener('input', function() {
+  state.search = this.value.trim();
+  renderList();
+});
+
+/* Dropdown menu */
+document.getElementById('menuToggle').addEventListener('click', function(e) {
+  e.stopPropagation();
+  document.getElementById('dropMenu').classList.toggle('hidden');
+});
+
+document.addEventListener('click', function() {
+  document.getElementById('dropMenu').classList.add('hidden');
+});
+
+document.getElementById('dropMenu').addEventListener('click', function(e) { e.stopPropagation(); });
+
+document.getElementById('btnExport').addEventListener('click', function() {
+  document.getElementById('dropMenu').classList.add('hidden');
+  doExport();
+});
+
+document.getElementById('btnImport').addEventListener('click', function() {
+  document.getElementById('dropMenu').classList.add('hidden');
+  document.getElementById('importFile').click();
+});
+
+document.getElementById('importFile').addEventListener('change', function() {
+  if (this.files[0]) { doImport(this.files[0]); this.value = ''; }
+});
+
+document.getElementById('btnStyles').addEventListener('click', function() {
+  document.getElementById('dropMenu').classList.add('hidden');
+  openStylesModal();
+});
+
+document.getElementById('btnStorageGuide').addEventListener('click', function() {
+  document.getElementById('dropMenu').classList.add('hidden');
+  openStorageGuide();
+});
+
+document.getElementById('btnFirebaseSettings').addEventListener('click', function() {
+  document.getElementById('dropMenu').classList.add('hidden');
+  if (unsubTechniques) { unsubTechniques(); unsubTechniques = null; }
+  if (unsubSettings) { unsubSettings(); unsubSettings = null; }
+  state.useFirebase = false;
+  document.getElementById('appRoot').classList.add('hidden');
+  showSetup();
+});
+
+document.getElementById('btnClear').addEventListener('click', function() {
+  document.getElementById('dropMenu').classList.add('hidden');
+  if (state.techniques.length === 0) { showToast('冇資料需要清除'); return; }
+  showConfirm('確定清除所有套路記錄？唔可以復原！', function() {
+    state.techniques.forEach(function(t) { deleteTechFromFirestore(t.id); });
+    state.techniques = [];
+    state.nextId = 1;
+    state.nextMoveId = 1;
+    state.filter = '全部';
+    saveLocal();
+    syncToFirestore();
+    goBack();
+    showToast('已清除所有資料');
+  });
+});
+
+/* ============================================================
+   INITIALIZATION
+   ============================================================ */
+(function init() {
+  var cfg = loadConfigLocal();
+  if (cfg) {
+    state.firebaseConfig = cfg;
+    startApp(true);
+  } else {
+    if (typeof firebase !== 'undefined' && firebase.initializeApp) {
+      showSetup();
+    } else {
+      startApp(false);
+    }
+  }
+})();
+</script>
+</body>
+</html>
