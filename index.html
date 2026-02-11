@@ -1520,6 +1520,77 @@ body::before {
 
 .link-hint:hover { color: var(--accent); }
 .link-hint i { margin-right: 2px; }
+
+/* ====== Viewer Mode ====== */
+.viewer-banner {
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: #fff;
+  text-align: center;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.viewer-banner i { font-size: 14px; }
+.viewer-banner a {
+  color: #fff;
+  text-decoration: underline;
+  font-weight: 700;
+}
+body.viewer-mode .fab,
+body.viewer-mode #fabBtn,
+body.viewer-mode .detail-actions,
+body.viewer-mode .move-actions,
+body.viewer-mode .dropdown-menu,
+body.viewer-mode #menuToggle,
+body.viewer-mode #searchToggle,
+body.viewer-mode .sync-badge { display: none !important; }
+
+/* Share URL box in modal */
+.share-url-box {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  word-break: break-all;
+  color: var(--text-primary);
+  line-height: 1.5;
+  max-height: 120px;
+  overflow-y: auto;
+  user-select: all;
+}
+.share-copy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.share-copy-btn:hover { background: var(--accent-hover); }
+.share-copy-btn.copied { background: var(--success); }
+.publish-status {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+.publish-status i { font-size: 28px; display: block; margin-bottom: 12px; color: var(--gold); }
+.publish-status.error i { color: var(--danger); }
 </style>
 </head>
 <body>
@@ -1553,7 +1624,7 @@ body::before {
         <span class="step-number">2</span>
         <h3>開啟 Firestore 同匿名驗證</h3>
         <ol>
-          <li>左邊選單 →「Firestore Database」→「建立資料庫」→ 選「測試模式」→ 啟用</li>
+          <li>左邊選單 →「Firestore Database」→「建立資料庫」→ 選「正式模式」→ 啟用</li>
           <li>左邊選單 →「Authentication」→「Sign-in method」→ 開啟「匿名」</li>
           <li>去「Firestore」→「規則」，貼上以下規則並發佈：</li>
         </ol>
@@ -1563,6 +1634,10 @@ service cloud.firestore {
     match /users/{userId}/{document=**} {
       allow read, write: if request.auth != null
         && request.auth.uid == userId;
+    }
+    match /published/{shareId} {
+      allow read: if true;
+      allow write: if request.auth != null;
     }
   }
 }</code>
@@ -1618,6 +1693,7 @@ service cloud.firestore {
   </div>
 
   <div class="dropdown-menu hidden" id="dropMenu">
+    <button class="dropdown-item" id="btnPublish"><i class="fas fa-globe"></i>發佈分享</button>
     <button class="dropdown-item" id="btnExport"><i class="fas fa-file-export"></i>匯出 JSON</button>
     <button class="dropdown-item" id="btnImport"><i class="fas fa-file-import"></i>匯入 JSON</button>
     <button class="dropdown-item" id="btnStyles"><i class="fas fa-layer-group"></i>管理分類組別</button>
@@ -3070,9 +3146,180 @@ document.getElementById('btnClear').addEventListener('click', function() {
 });
 
 /* ============================================================
+   PUBLISH / SHARE
+   ============================================================ */
+function generateShareId() {
+  var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  var id = '';
+  for (var i = 0; i < 10; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+
+function publishData() {
+  if (!state.useFirebase || !db || !state.uid) {
+    showToast('請先設定並連接 Firebase 雲端');
+    return;
+  }
+  if (state.techniques.length === 0) {
+    showToast('冇資料可以發佈');
+    return;
+  }
+
+  var ov = document.createElement('div');
+  ov.className = 'modal-overlay';
+  ov.innerHTML =
+    '<div class="modal">' +
+      '<div class="modal-head"><div class="modal-title">發佈分享</div><button class="modal-close-btn" id="pubClose"><i class="fas fa-xmark"></i></button></div>' +
+      '<div class="modal-content">' +
+        '<div class="publish-status" id="pubStatus"><i class="fas fa-spinner fa-spin"></i>正在發佈資料到雲端⋯</div>' +
+        '<div id="pubResult" style="display:none"></div>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(ov);
+
+  ov.querySelector('#pubClose').addEventListener('click', function() { ov.remove(); });
+  ov.addEventListener('click', function(e) { if (e.target === ov) ov.remove(); });
+
+  var shareId = generateShareId();
+  var pubData = {
+    title: '營養師修武之路',
+    publishedAt: Date.now(),
+    publisherUid: state.uid,
+    styles: state.styles,
+    techniques: state.techniques.map(function(t) {
+      var copy = Object.assign({}, t);
+      delete copy.videoBlob;
+      if (copy.moves) copy.moves = copy.moves.slice();
+      return copy;
+    })
+  };
+
+  db.doc('published/' + shareId).set(pubData)
+    .then(function() {
+      var baseUrl = window.location.href.split('?')[0].split('#')[0];
+      var cfgB64 = btoa(unescape(encodeURIComponent(JSON.stringify(state.firebaseConfig))));
+      var shareUrl = baseUrl + '?view=' + shareId + '&fc=' + cfgB64;
+
+      var statusEl = ov.querySelector('#pubStatus');
+      statusEl.style.display = 'none';
+
+      var resultEl = ov.querySelector('#pubResult');
+      resultEl.style.display = 'block';
+      resultEl.innerHTML =
+        '<p style="text-align:center;margin-bottom:12px;color:var(--success);font-weight:600;"><i class="fas fa-check-circle"></i> 發佈成功！</p>' +
+        '<p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">將以下連結分享俾朋友，佢哋可以直接睇到你嘅所有套路（唯讀模式）：</p>' +
+        '<div class="share-url-box" id="shareUrlBox">' + esc(shareUrl) + '</div>' +
+        '<button class="share-copy-btn" id="pubCopyBtn"><i class="fas fa-copy"></i> 複製連結</button>' +
+        '<p style="font-size:11px;color:var(--text-muted);margin-top:8px;text-align:center;">每次發佈會產生新連結，舊連結嘅資料唔會自動更新</p>';
+
+      ov.querySelector('#pubCopyBtn').addEventListener('click', function() {
+        var btn = this;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(shareUrl).then(function() {
+            btn.innerHTML = '<i class="fas fa-check"></i> 已複製！';
+            btn.classList.add('copied');
+            setTimeout(function() { btn.innerHTML = '<i class="fas fa-copy"></i> 複製連結'; btn.classList.remove('copied'); }, 2000);
+          });
+        } else {
+          showToast('請手動複製上面嘅連結');
+        }
+      });
+    })
+    .catch(function(err) {
+      var statusEl = ov.querySelector('#pubStatus');
+      statusEl.className = 'publish-status error';
+      statusEl.innerHTML = '<i class="fas fa-exclamation-circle"></i>發佈失敗：' + esc(err.message) + '<br><br><span style="font-size:12px;">請確認 Firestore 規則已加入 published 集合嘅公開讀取權限</span>';
+    });
+}
+
+/* ============================================================
+   VIEWER MODE (read-only via ?view=xxx&fc=xxx)
+   ============================================================ */
+function getViewerParams() {
+  var params = new URLSearchParams(window.location.search);
+  var viewId = params.get('view');
+  var fcB64 = params.get('fc');
+  if (viewId && fcB64) {
+    try {
+      var cfgJson = decodeURIComponent(escape(atob(fcB64)));
+      var cfg = JSON.parse(cfgJson);
+      return { shareId: viewId, config: cfg };
+    } catch (e) {
+      return null;
+    }
+  }
+  return null;
+}
+
+function startViewerMode(viewerInfo) {
+  document.body.classList.add('viewer-mode');
+  document.getElementById('setupScreen').classList.add('hidden');
+  document.getElementById('loadingScreen').classList.remove('hidden');
+
+  /* Add viewer banner */
+  var banner = document.createElement('div');
+  banner.className = 'viewer-banner';
+  banner.innerHTML = '<i class="fas fa-eye"></i> 唯讀瀏覽模式 — 你正在睇其他人分享嘅武術筆記';
+  document.body.insertBefore(banner, document.body.firstChild);
+
+  var ok = initFirebase(viewerInfo.config);
+  if (!ok) {
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.getElementById('appRoot').classList.remove('hidden');
+    document.getElementById('techGrid').innerHTML = '<div class="empty-state"><div class="empty-char">✕</div><h3>載入失敗</h3><p>無法連接雲端資料庫</p></div>';
+    return;
+  }
+
+  db.doc('published/' + viewerInfo.shareId).get()
+    .then(function(snap) {
+      if (!snap.exists) {
+        document.getElementById('loadingScreen').classList.add('hidden');
+        document.getElementById('appRoot').classList.remove('hidden');
+        document.getElementById('techGrid').innerHTML = '<div class="empty-state"><div class="empty-char">？</div><h3>搵唔到資料</h3><p>呢條分享連結可能已經過期或無效</p></div>';
+        return;
+      }
+      var data = snap.data();
+      state.styles = data.styles || [];
+      state.techniques = (data.techniques || []).map(function(t) { return ensureMoves(t); });
+      state.nextId = 999999;
+      state.nextMoveId = 999999;
+
+      document.getElementById('loadingScreen').classList.add('hidden');
+      document.getElementById('appRoot').classList.remove('hidden');
+
+      /* Hide intro banner in viewer mode, show the publisher's title */
+      var introBanner = document.getElementById('introBanner');
+      if (introBanner) introBanner.style.display = 'none';
+
+      renderTabs();
+      renderList();
+    })
+    .catch(function(err) {
+      document.getElementById('loadingScreen').classList.add('hidden');
+      document.getElementById('appRoot').classList.remove('hidden');
+      document.getElementById('techGrid').innerHTML = '<div class="empty-state"><div class="empty-char">✕</div><h3>載入失敗</h3><p>' + esc(err.message) + '</p></div>';
+    });
+}
+
+/* ============================================================
+   PUBLISH EVENT BINDING
+   ============================================================ */
+document.getElementById('btnPublish').addEventListener('click', function() {
+  document.getElementById('dropMenu').classList.add('hidden');
+  publishData();
+});
+
+/* ============================================================
    INITIALIZATION
    ============================================================ */
 (function init() {
+  /* Check if this is a viewer link */
+  var viewerInfo = getViewerParams();
+  if (viewerInfo) {
+    startViewerMode(viewerInfo);
+    return;
+  }
+
   var cfg = loadConfigLocal();
   if (cfg) {
     state.firebaseConfig = cfg;
