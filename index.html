@@ -1788,6 +1788,10 @@ function genMoveId() { return state.nextMoveId++; }
 /* Ensure a routine has a moves array */
 function ensureMoves(t) {
   if (!Array.isArray(t.moves)) t.moves = [];
+  /* Backward compat: migrate single videoUrl to videoUrls array */
+  if (!Array.isArray(t.videoUrls)) {
+    t.videoUrls = t.videoUrl ? [t.videoUrl] : [];
+  }
   return t;
 }
 
@@ -2055,7 +2059,7 @@ function renderList() {
 
   el.innerHTML = list.map(function(t, i) {
     var preview = t.history || t.notes || '';
-    var hasVid = t.videoUrl || t.videoBlob;
+    var hasVid = (t.videoUrls && t.videoUrls.length > 0) || t.videoUrl || t.videoBlob;
     var diff = t.difficulty ? '<span class="card-tag"><i class="fas fa-signal"></i> ' + esc(t.difficulty) + '</span>' : '';
     var moveCount = (t.moves || []).length;
     var movesTag = moveCount > 0 ? '<span class="card-tag"><i class="fas fa-list-ol"></i> ' + moveCount + ' 招</span>' : '';
@@ -2065,7 +2069,7 @@ function renderList() {
       '</div>' +
       (preview ? '<div class="card-preview">' + esc(preview) + '</div>' : '') +
       '<div class="card-bottom">' +
-        (hasVid ? '<span class="card-tag"><i class="fas fa-video"></i> 有影片</span>' : '') +
+        (hasVid ? '<span class="card-tag"><i class="fas fa-video"></i> ' + ((t.videoUrls && t.videoUrls.length > 1) ? t.videoUrls.length + ' 條影片' : '有影片') + '</span>' : '') +
         movesTag +
         diff +
         '<span class="card-tag"><i class="fas fa-clock"></i> ' + fmtDate(t.updatedAt) + '</span>' +
@@ -2098,13 +2102,17 @@ function showDetail(id) {
 
 function renderDetailContent(t, dv) {
   var vid = '';
-  var yid = ytId(t.videoUrl);
-  if (yid) {
-    vid = '<div class="detail-video"><iframe src="https://www.youtube.com/embed/' + yid + '" allowfullscreen loading="lazy"></iframe></div>';
-  } else if (t.videoBlob) {
+  var urls = t.videoUrls || (t.videoUrl ? [t.videoUrl] : []);
+  urls.forEach(function(u) {
+    var yid = ytId(u);
+    if (yid) {
+      vid += '<div class="detail-video"><iframe src="https://www.youtube.com/embed/' + yid + '" allowfullscreen loading="lazy"></iframe></div>';
+    } else if (u) {
+      vid += '<div class="detail-video"><video src="' + esc(u) + '" controls playsinline></video></div>';
+    }
+  });
+  if (!vid && t.videoBlob) {
     vid = '<div class="detail-video"><video src="' + t.videoBlob + '" controls playsinline></video></div>';
-  } else if (t.videoUrl) {
-    vid = '<div class="detail-video"><video src="' + esc(t.videoUrl) + '" controls playsinline></video></div>';
   }
 
   /* Build moves list HTML */
@@ -2376,7 +2384,7 @@ function goBack() {
    ============================================================ */
 function openForm(existing) {
   var isEdit = !!existing;
-  var currentBlob = existing ? (existing.videoBlob || null) : null;
+  var formVideoUrls = existing ? (existing.videoUrls || (existing.videoUrl ? [existing.videoUrl] : [])).slice() : [];
 
   var overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -2402,10 +2410,13 @@ function openForm(existing) {
       '<div class="field"><label>歷史背景</label><textarea id="fHistory" rows="3" placeholder="呢套路嘅來源、歷史典故…">' + (existing ? esc(existing.history) : '') + '</textarea></div>' +
       '<div class="field"><label>練習心得</label><textarea id="fNotes" rows="4" placeholder="練習技巧、注意事項、感想…">' + (existing ? esc(existing.notes) : '') + '</textarea></div>' +
       '<div class="video-box">' +
-        '<div class="video-box-title"><i class="fas fa-film"></i> 影片（選填）</div>' +
-        '<div class="vid-tabs"><button class="vid-tab active" data-vt="url">YouTube / 影片網址</button><button class="vid-tab" data-vt="file">上傳影片</button></div>' +
-        '<div id="vpUrl"><input type="text" class="vid-url-input" id="fVidUrl" placeholder="貼上 YouTube 或影片網址…" value="' + (existing && existing.videoUrl ? esc(existing.videoUrl) : '') + '"><div class="vid-hint">支援 YouTube、YouTube Shorts 連結</div><div id="vpUrlPreview"></div></div>' +
-        '<div id="vpFile" class="hidden"><label class="btn btn-secondary btn-full btn-sm" style="cursor:pointer;" id="fileLabel"><i class="fas fa-upload"></i> 選擇影片檔案<input type="file" accept="video/*" id="fVidFile" class="hidden"></label><div id="vpFilePreview"></div><div class="vid-hint">影片會暫存喺瀏覽器記憶體中（唔會上傳至雲端）</div></div>' +
+        '<div class="video-box-title"><i class="fas fa-film"></i> 影片連結（選填，可加無限個）</div>' +
+        '<div id="fVidUrlList"></div>' +
+        '<div class="form-moves-add-row" style="margin-top:8px;">' +
+          '<input type="text" id="fVidNewUrl" placeholder="貼上 YouTube 或影片網址…" style="font-size:16px;">' +
+          '<button class="btn btn-primary btn-sm" type="button" id="fVidAddBtn"><i class="fas fa-plus"></i> 加入</button>' +
+        '</div>' +
+        '<div class="vid-hint">支援 YouTube、YouTube Shorts 連結，可加入多條</div>' +
       '</div>' +
       /* Moves section in form */
       '<div class="form-moves-box">' +
@@ -2554,63 +2565,50 @@ function openForm(existing) {
     showToast('已新增「' + v + '」');
   });
 
-  /* Video tab switching */
-  overlay.querySelectorAll('.vid-tab').forEach(function(tab) {
-    tab.addEventListener('click', function() {
-      overlay.querySelectorAll('.vid-tab').forEach(function(t2) { t2.classList.remove('active'); });
-      tab.classList.add('active');
-      var vt = tab.getAttribute('data-vt');
-      document.getElementById('vpUrl').classList.toggle('hidden', vt !== 'url');
-      document.getElementById('vpFile').classList.toggle('hidden', vt !== 'file');
+  /* Multi video URL management */
+  function renderFormVideoUrls() {
+    var listEl = document.getElementById('fVidUrlList');
+    if (formVideoUrls.length === 0) {
+      listEl.innerHTML = '';
+      return;
+    }
+    listEl.innerHTML = formVideoUrls.map(function(u, idx) {
+      var yid = ytId(u);
+      var preview = yid
+        ? '<div class="vid-preview" style="margin-top:6px;"><iframe src="https://www.youtube.com/embed/' + yid + '" allowfullscreen loading="lazy"></iframe></div>'
+        : '';
+      var icon = yid ? '<i class="fab fa-youtube" style="color:#c00;"></i> ' : '<i class="fas fa-link"></i> ';
+      return '<div class="form-move-entry" data-vidx="' + idx + '" style="padding:8px 10px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;">' +
+          '<span class="fm-num">' + (idx + 1) + '</span>' +
+          '<div style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;">' + icon + esc(u) + '</div>' +
+          '<button type="button" class="fm-del" data-vdel="' + idx + '" title="刪除"><i class="fas fa-trash"></i></button>' +
+        '</div>' +
+        preview +
+      '</div>';
+    }).join('');
+    listEl.querySelectorAll('[data-vdel]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var idx2 = parseInt(btn.getAttribute('data-vdel'), 10);
+        formVideoUrls.splice(idx2, 1);
+        renderFormVideoUrls();
+      });
     });
+  }
+  renderFormVideoUrls();
+
+  document.getElementById('fVidAddBtn').addEventListener('click', function() {
+    var inp = document.getElementById('fVidNewUrl');
+    var v = inp.value.trim();
+    if (!v) { showToast('請貼上影片網址'); inp.focus(); return; }
+    formVideoUrls.push(v);
+    inp.value = '';
+    renderFormVideoUrls();
+    inp.focus();
   });
-
-  /* YouTube preview */
-  var urlInput = document.getElementById('fVidUrl');
-  var previewTimer;
-  function refreshUrlPreview() {
-    clearTimeout(previewTimer);
-    previewTimer = setTimeout(function() {
-      var vid = ytId(urlInput.value);
-      var pe = document.getElementById('vpUrlPreview');
-      if (vid) {
-        pe.innerHTML = '<div class="vid-preview"><iframe src="https://www.youtube.com/embed/' + vid + '" allowfullscreen loading="lazy"></iframe></div>';
-      } else {
-        pe.innerHTML = '';
-      }
-    }, 400);
-  }
-  urlInput.addEventListener('input', refreshUrlPreview);
-  if (existing && existing.videoUrl) refreshUrlPreview();
-
-  /* If existing has blob, switch to file tab */
-  if (existing && existing.videoBlob) {
-    overlay.querySelectorAll('.vid-tab').forEach(function(t2) { t2.classList.remove('active'); });
-    overlay.querySelectorAll('.vid-tab')[1].classList.add('active');
-    document.getElementById('vpUrl').classList.add('hidden');
-    document.getElementById('vpFile').classList.remove('hidden');
-    document.getElementById('vpFilePreview').innerHTML = '<div class="vid-preview"><video src="' + existing.videoBlob + '" controls playsinline></video></div>';
-    var fl = document.getElementById('fileLabel');
-    fl.innerHTML = '<i class="fas fa-check"></i> 已有影片<input type="file" accept="video/*" id="fVidFile" class="hidden">';
-    bindFileInput();
-  }
-
-  function bindFileInput() {
-    document.getElementById('fVidFile').addEventListener('change', function() {
-      var file = this.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        currentBlob = e.target.result;
-        document.getElementById('vpFilePreview').innerHTML = '<div class="vid-preview"><video src="' + currentBlob + '" controls playsinline></video></div>';
-        var fl2 = document.getElementById('fileLabel');
-        fl2.innerHTML = '<i class="fas fa-check"></i> ' + esc(file.name) + '<input type="file" accept="video/*" id="fVidFile" class="hidden">';
-        bindFileInput();
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-  bindFileInput();
+  document.getElementById('fVidNewUrl').addEventListener('keydown', function(ev) {
+    if (ev.key === 'Enter') { ev.preventDefault(); document.getElementById('fVidAddBtn').click(); }
+  });
 
   /* Close */
   function closeForm() { overlay.remove(); }
@@ -2640,8 +2638,6 @@ function openForm(existing) {
     var diff = document.getElementById('fDiff').value;
     var history = document.getElementById('fHistory').value.trim();
     var notes = document.getElementById('fNotes').value.trim();
-    var vidUrl = document.getElementById('fVidUrl').value.trim();
-    var activeTab = overlay.querySelector('.vid-tab.active').getAttribute('data-vt');
 
     if (!name) { showToast('請輸入套路名稱'); document.getElementById('fName').focus(); return; }
 
@@ -2660,8 +2656,8 @@ function openForm(existing) {
       existing.difficulty = diff;
       existing.history = history;
       existing.notes = notes;
-      if (activeTab === 'url') { existing.videoUrl = vidUrl; if (vidUrl) existing.videoBlob = null; }
-      else { existing.videoBlob = currentBlob; if (currentBlob) existing.videoUrl = ''; }
+      existing.videoUrls = formVideoUrls.slice();
+      existing.videoUrl = formVideoUrls[0] || '';
       existing.moves = savedMoves;
       existing.updatedAt = now;
       saveTechToFirestore(existing);
@@ -2671,8 +2667,8 @@ function openForm(existing) {
         id: genId(),
         name: name, style: style, difficulty: diff,
         history: history, notes: notes,
-        videoUrl: activeTab === 'url' ? vidUrl : '',
-        videoBlob: activeTab === 'file' ? currentBlob : null,
+        videoUrls: formVideoUrls.slice(),
+        videoUrl: formVideoUrls[0] || '',
         moves: savedMoves,
         createdAt: now, updatedAt: now
       };
