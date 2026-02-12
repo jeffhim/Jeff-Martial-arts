@@ -1791,6 +1791,35 @@ function ensureMoves(t) {
   return t;
 }
 
+/* Split pasted text into individual move names.
+   Delimiters: newline, comma, full-width comma, tab, or 2+ spaces.
+   Single spaces between CJK characters are treated as name separators,
+   but single spaces between ASCII/mixed words are NOT split (e.g. "round kick" stays together). */
+function splitMoveNames(text) {
+  /* Step 1: normalise obvious delimiters to \n */
+  var s = text.replace(/[\t，,]/g, '\n');
+  /* Step 2: split by newline first */
+  var parts = s.split(/\n+/);
+  var result = [];
+  parts.forEach(function(part) {
+    part = part.trim();
+    if (!part) return;
+    /* If the part contains 2+ consecutive spaces, split there */
+    if (/\s{2,}/.test(part)) {
+      part.split(/\s{2,}/).forEach(function(p) { p = p.trim(); if (p) result.push(p); });
+      return;
+    }
+    /* Check if text is mostly CJK — if so, split by single space too */
+    var cjkCount = (part.match(/[\u4e00-\u9fff\u3400-\u4dbf]/g) || []).length;
+    if (cjkCount > 0 && part.indexOf(' ') !== -1) {
+      part.split(/\s+/).forEach(function(p) { p = p.trim(); if (p) result.push(p); });
+    } else {
+      result.push(part);
+    }
+  });
+  return result.length > 0 ? result : [text.trim()];
+}
+
 /* ============================================================
    LOCAL STORAGE HELPERS
    ============================================================ */
@@ -2247,7 +2276,7 @@ function showMoveForm(routine, existingMove, dv) {
   var form = document.createElement('div');
   form.className = 'move-edit-form';
   form.innerHTML =
-    '<input type="text" id="moveNameInput" placeholder="招式名稱 *" value="' + (isEdit ? esc(existingMove.name) : '') + '">' +
+    '<input type="text" id="moveNameInput" placeholder="' + (isEdit ? '招式名稱 *' : '招式名稱（可用空格分隔多個）') + '" value="' + (isEdit ? esc(existingMove.name) : '') + '">' +
     '<textarea id="moveNotesInput" rows="2" placeholder="備註（選填）">' + (isEdit ? esc(existingMove.notes || '') : '') + '</textarea>' +
     '<input type="url" id="moveLinkInput" placeholder="超連結（選填）— 圖片/影片網址" value="' + (isEdit ? esc(existingMove.link || '') : '') + '" style="font-size:14px;">' +
     '<div class="link-hint" id="moveLinkHint"><i class="fas fa-circle-info"></i> 可上傳到 TeraBox（1TB 免費）再貼分享連結</div>' +
@@ -2284,21 +2313,25 @@ function showMoveForm(routine, existingMove, dv) {
   document.getElementById('moveCancelBtn').addEventListener('click', closeForm);
 
   document.getElementById('moveSaveBtn').addEventListener('click', function() {
-    var name = nameInput.value.trim();
-    if (!name) { showToast('請輸入招式名稱'); nameInput.focus(); return; }
+    var rawName = nameInput.value.trim();
+    if (!rawName) { showToast('請輸入招式名稱'); nameInput.focus(); return; }
     var notes = document.getElementById('moveNotesInput').value.trim();
     var link = document.getElementById('moveLinkInput').value.trim();
 
     if (isEdit) {
-      existingMove.name = name;
+      existingMove.name = rawName;
       existingMove.notes = notes;
       existingMove.link = link;
     } else {
-      routine.moves.push({
-        id: genMoveId(),
-        name: name,
-        notes: notes,
-        link: link
+      /* Split by common delimiters: spaces, newlines, commas, full-width spaces/commas, tabs */
+      var names = splitMoveNames(rawName);
+      names.forEach(function(n, idx) {
+        routine.moves.push({
+          id: genMoveId(),
+          name: n,
+          notes: idx === 0 ? notes : '',
+          link: idx === 0 ? link : ''
+        });
       });
     }
 
@@ -2306,7 +2339,12 @@ function showMoveForm(routine, existingMove, dv) {
     saveTechToFirestore(routine);
     syncToFirestore();
     saveLocal();
-    showToast(isEdit ? '已儲存招式' : '已新增「' + name + '」');
+    if (isEdit) {
+      showToast('已儲存招式');
+    } else {
+      var names2 = splitMoveNames(rawName);
+      showToast('已新增 ' + names2.length + ' 個招式');
+    }
     renderDetailContent(routine, dv);
   });
 
@@ -2374,7 +2412,7 @@ function openForm(existing) {
         '<div class="form-moves-title"><i class="fas fa-list-ol"></i> 招式列表（選填）</div>' +
         '<div class="form-moves-list" id="fMovesList"></div>' +
         '<div class="form-moves-add-row">' +
-          '<input type="text" id="fMoveNewName" placeholder="輸入招式名稱…">' +
+          '<input type="text" id="fMoveNewName" placeholder="輸入招式名稱（可用空格分隔多個）">' +
           '<button class="btn btn-primary btn-sm" type="button" id="fMoveAddBtn"><i class="fas fa-plus"></i> 加入</button>' +
         '</div>' +
         '<div class="vid-hint" style="margin-top:6px;">可以喺度直接加入套路中嘅招式，之後亦可以喺詳情頁面編輯</div>' +
@@ -2464,9 +2502,13 @@ function openForm(existing) {
     var v = nameInp.value.trim();
     if (!v) { showToast('請輸入招式名稱'); nameInp.focus(); return; }
     syncFormMoveValues();
-    formMoves.push({ id: 0, name: v, notes: '', link: '' });
+    var names = splitMoveNames(v);
+    names.forEach(function(n) {
+      formMoves.push({ id: 0, name: n, notes: '', link: '' });
+    });
     nameInp.value = '';
     renderFormMoves();
+    if (names.length > 1) showToast('已加入 ' + names.length + ' 個招式');
     nameInp.focus();
   });
 
