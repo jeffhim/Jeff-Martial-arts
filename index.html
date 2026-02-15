@@ -566,6 +566,32 @@ body::before {
 .card-tag { display: flex; align-items: center; gap: 4px; }
 .card-tag i { font-size: 10px; }
 
+.card-reorder {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.card-reorder button {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  width: 26px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 10px;
+  padding: 0;
+  transition: all 0.15s;
+}
+.card-reorder button:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+.card-reorder button:disabled { opacity: 0.25; cursor: default; }
+.card-reorder button:disabled:hover { background: var(--bg-secondary); color: var(--text-muted); border-color: var(--border-light); }
+
 /* ====== Empty State ====== */
 .empty-state {
   text-align: center;
@@ -2048,7 +2074,13 @@ function renderList() {
     });
   }
 
-  list.sort(function(a, b) { return b.updatedAt - a.updatedAt; });
+  /* Sort by sortOrder (lower = earlier); fallback to creation time */
+  list.sort(function(a, b) {
+    var oa = typeof a.sortOrder === 'number' ? a.sortOrder : 999999;
+    var ob = typeof b.sortOrder === 'number' ? b.sortOrder : 999999;
+    if (oa !== ob) return oa - ob;
+    return (a.createdAt || 0) - (b.createdAt || 0);
+  });
 
   if (list.length === 0) {
     var msg = state.search ? '搵唔到相關嘅套路' : (state.filter !== '全部' ? '呢個分類組別暫時冇套路' : '未有任何套路記錄');
@@ -2057,15 +2089,24 @@ function renderList() {
     return;
   }
 
+  var canReorder = !state.search;
+
   el.innerHTML = list.map(function(t, i) {
     var preview = t.history || t.notes || '';
     var hasVid = (t.videoUrls && t.videoUrls.length > 0) || t.videoUrl || t.videoBlob;
     var diff = t.difficulty ? '<span class="card-tag"><i class="fas fa-signal"></i> ' + esc(t.difficulty) + '</span>' : '';
     var moveCount = (t.moves || []).length;
     var movesTag = moveCount > 0 ? '<span class="card-tag"><i class="fas fa-list-ol"></i> ' + moveCount + ' 招</span>' : '';
+    var reorderBtns = canReorder
+      ? '<div class="card-reorder">' +
+          '<button data-move-up="' + t.id + '"' + (i === 0 ? ' disabled' : '') + ' title="上移"><i class="fas fa-chevron-up"></i></button>' +
+          '<button data-move-down="' + t.id + '"' + (i === list.length - 1 ? ' disabled' : '') + ' title="下移"><i class="fas fa-chevron-down"></i></button>' +
+        '</div>'
+      : '';
     return '<div class="technique-card" data-id="' + t.id + '" style="animation-delay:' + (i * 0.04) + 's">' +
       '<div class="card-top">' +
         '<div class="card-body"><div class="card-name">' + esc(t.name) + '</div><div class="card-style-label">' + esc(t.style) + '</div></div>' +
+        reorderBtns +
       '</div>' +
       (preview ? '<div class="card-preview">' + esc(preview) + '</div>' : '') +
       '<div class="card-bottom">' +
@@ -2077,11 +2118,56 @@ function renderList() {
     '</div>';
   }).join('');
 
+  /* Card click → detail */
   el.querySelectorAll('.technique-card').forEach(function(c) {
-    c.addEventListener('click', function() {
+    c.addEventListener('click', function(e) {
+      /* Ignore if click was on reorder buttons */
+      if (e.target.closest('.card-reorder')) return;
       showDetail(parseInt(c.getAttribute('data-id'), 10));
     });
   });
+
+  /* Reorder buttons */
+  el.querySelectorAll('[data-move-up]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      reorderRoutine(parseInt(btn.getAttribute('data-move-up'), 10), -1, list);
+    });
+  });
+  el.querySelectorAll('[data-move-down]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      reorderRoutine(parseInt(btn.getAttribute('data-move-down'), 10), 1, list);
+    });
+  });
+}
+
+function reorderRoutine(id, direction, currentList) {
+  /* Find the item's position in the currently displayed (sorted) list */
+  var idx = -1;
+  for (var i = 0; i < currentList.length; i++) {
+    if (currentList[i].id === id) { idx = i; break; }
+  }
+  if (idx < 0) return;
+  var swapIdx = idx + direction;
+  if (swapIdx < 0 || swapIdx >= currentList.length) return;
+
+  /* Swap sortOrder values between the two items */
+  var a = currentList[idx];
+  var b = currentList[swapIdx];
+
+  /* Ensure both have numeric sortOrder */
+  if (typeof a.sortOrder !== 'number') a.sortOrder = idx;
+  if (typeof b.sortOrder !== 'number') b.sortOrder = swapIdx;
+
+  var tmp = a.sortOrder;
+  a.sortOrder = b.sortOrder;
+  b.sortOrder = tmp;
+
+  saveTechToFirestore(a);
+  saveTechToFirestore(b);
+  saveLocal();
+  renderList();
 }
 
 /* ============================================================
@@ -2394,7 +2480,7 @@ function openForm(existing) {
   }).join('');
   opts += '<option value="__new__">＋ 新增分類組別…</option>';
 
-  var diffOpts = ['', '入門', '初級', '中級', '高級', '大師'].map(function(d) {
+  var diffOpts = ['', '初級', '中級', '高級', '深造'].map(function(d) {
     var label = d || '未設定';
     return '<option value="' + d + '"' + (existing && existing.difficulty === d ? ' selected' : '') + '>' + label + '</option>';
   }).join('');
