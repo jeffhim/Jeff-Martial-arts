@@ -377,10 +377,15 @@ body::before {
   background: rgba(39,174,96,0.1);
   padding: 2px 8px;
   border-radius: 10px;
+  cursor: default;
 }
 
 .sync-badge.offline { color: var(--text-muted); background: var(--bg-secondary); }
 .sync-badge.syncing { color: var(--gold); background: var(--gold-light); }
+.sync-badge.no-network { color: var(--danger); background: rgba(231,76,60,0.1); }
+.sync-badge.no-network .sync-dot { animation: pulse-dot 1.5s infinite; }
+
+@keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
 
 .sync-dot {
   width: 6px;
@@ -388,6 +393,25 @@ body::before {
   border-radius: 50%;
   background: currentColor;
 }
+
+.sync-force-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--accent);
+  background: var(--accent-light);
+  border: 1px solid var(--accent);
+  padding: 2px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.sync-force-btn:hover { background: var(--accent); color: #fff; }
+.sync-force-btn.syncing-btn { color: var(--gold); border-color: var(--gold); background: var(--gold-light); pointer-events: none; }
+.sync-force-btn.done-btn { color: var(--success); border-color: var(--success); background: rgba(39,174,96,0.1); pointer-events: none; }
 
 .header-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
@@ -1702,6 +1726,7 @@ service cloud.firestore {
         <span class="sync-dot"></span>
         <span id="syncLabel">本地模式</span>
       </div>
+      <button class="sync-force-btn hidden" id="syncForceBtn" title="手動同步"><i class="fas fa-cloud-arrow-up"></i> <span id="syncForceLabel">確認同步</span></button>
     </div>
     <div class="header-actions">
       <button class="btn-icon" id="homeBtn" title="返回主頁"><i class="fas fa-home"></i></button>
@@ -1926,6 +1951,10 @@ function initFirebase(config) {
     }
     firebase.initializeApp(config);
     db = firebase.firestore();
+    /* Enable offline persistence so cached data is available without network */
+    db.enablePersistence({ synchronizeTabs: false }).catch(function(err) {
+      console.log('Persistence error: ' + err.code);
+    });
     return true;
   } catch (e) {
     console.log('Firebase init error: ' + e.message);
@@ -2013,17 +2042,95 @@ function listenFirestore() {
 function setSyncBadge(mode) {
   var badge = document.getElementById('syncBadge');
   var label = document.getElementById('syncLabel');
+  var forceBtn = document.getElementById('syncForceBtn');
   badge.className = 'sync-badge';
   if (mode === 'cloud') {
-    badge.classList.remove('offline', 'syncing');
     label.textContent = '雲端同步';
+    forceBtn.classList.remove('hidden');
   } else if (mode === 'syncing') {
     badge.classList.add('syncing');
     label.textContent = '同步中…';
+  } else if (mode === 'no-network') {
+    badge.classList.add('no-network');
+    label.textContent = '離線模式（已暫存）';
+    forceBtn.classList.add('hidden');
   } else {
     badge.classList.add('offline');
     label.textContent = '本地模式';
+    forceBtn.classList.add('hidden');
   }
+}
+
+/* ============================================================
+   NETWORK MONITORING & MANUAL SYNC
+   ============================================================ */
+function updateNetworkStatus() {
+  if (!state.useFirebase) return;
+  if (navigator.onLine) {
+    setSyncBadge('cloud');
+  } else {
+    setSyncBadge('no-network');
+  }
+}
+
+window.addEventListener('online', function() {
+  if (state.useFirebase) {
+    setSyncBadge('syncing');
+    /* Re-push all local data to ensure cloud is up to date */
+    syncToFirestore();
+    state.techniques.forEach(function(t) { saveTechToFirestore(t); });
+    setTimeout(function() {
+      setSyncBadge('cloud');
+      showToast('已重新連接，資料同步完成');
+    }, 1500);
+  }
+});
+
+window.addEventListener('offline', function() {
+  if (state.useFirebase) {
+    setSyncBadge('no-network');
+    showToast('網絡已斷開，資料會暫存到裝置');
+  }
+});
+
+function forceSync() {
+  if (!state.useFirebase || !db || !state.uid) {
+    showToast('未連接雲端');
+    return;
+  }
+  var btn = document.getElementById('syncForceBtn');
+  var lbl = document.getElementById('syncForceLabel');
+  btn.className = 'sync-force-btn syncing-btn';
+  lbl.textContent = '同步中…';
+
+  /* Write all data to Firestore */
+  var promises = [];
+  promises.push(db.doc(fbDocPath('config/settings')).set({
+    styles: state.styles,
+    nextId: state.nextId,
+    nextMoveId: state.nextMoveId,
+    updatedAt: Date.now()
+  }));
+  state.techniques.forEach(function(t) {
+    var data = Object.assign({}, t);
+    delete data.videoBlob;
+    if (data.moves) data.moves = data.moves.slice();
+    promises.push(db.doc(fbDocPath('techniques/' + t.id)).set(data));
+  });
+
+  Promise.all(promises).then(function() {
+    btn.className = 'sync-force-btn done-btn';
+    lbl.textContent = '同步成功 ✓';
+    showToast('全部資料已確認上傳到雲端');
+    setTimeout(function() {
+      btn.className = 'sync-force-btn';
+      lbl.textContent = '確認同步';
+    }, 3000);
+  }).catch(function(err) {
+    btn.className = 'sync-force-btn';
+    lbl.textContent = '確認同步';
+    showToast('同步失敗：' + err.message);
+  });
 }
 
 /* ============================================================
@@ -3129,7 +3236,7 @@ function startApp(tryFirebase) {
           syncToFirestore();
           state.techniques.forEach(function(t) { saveTechToFirestore(t); });
           listenFirestore();
-          setSyncBadge('cloud');
+          setSyncBadge(navigator.onLine ? 'cloud' : 'no-network');
           showApp();
         }
       });
@@ -3153,6 +3260,11 @@ function showApp() {
    EVENT BINDINGS
    ============================================================ */
 document.getElementById('fabBtn').addEventListener('click', function() { openForm(null); });
+
+/* Manual sync button */
+document.getElementById('syncForceBtn').addEventListener('click', function() {
+  forceSync();
+});
 
 /* Home button */
 document.getElementById('homeBtn').addEventListener('click', function() {
