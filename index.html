@@ -3358,11 +3358,52 @@ document.getElementById('btnStorageGuide').addEventListener('click', function() 
 
 document.getElementById('btnFirebaseSettings').addEventListener('click', function() {
   document.getElementById('dropMenu').classList.add('hidden');
-  if (unsubTechniques) { unsubTechniques(); unsubTechniques = null; }
-  if (unsubSettings) { unsubSettings(); unsubSettings = null; }
-  state.useFirebase = false;
-  document.getElementById('appRoot').classList.add('hidden');
-  showSetup();
+  if (state.uid) {
+    var ov = document.createElement('div');
+    ov.className = 'modal-overlay';
+    ov.innerHTML =
+      '<div class="modal">' +
+        '<div class="modal-head"><div class="modal-title">雲端設定</div><button class="modal-close-btn" id="fbInfoClose"><i class="fas fa-xmark"></i></button></div>' +
+        '<div class="modal-content">' +
+          '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">你嘅用戶 UID（設定 Firestore 規則時需要）：</div>' +
+          '<div class="share-url-box" id="uidBox" style="font-size:13px;">' + esc(state.uid) + '</div>' +
+          '<button class="share-copy-btn" id="uidCopyBtn" style="margin-top:8px;"><i class="fas fa-copy"></i> 複製 UID</button>' +
+          '<div style="font-size:12px;color:var(--text-muted);margin-top:12px;line-height:1.6;">' +
+            '<p><i class="fas fa-shield-halved" style="color:var(--gold);"></i> 將以下規則貼入 Firestore → 規則，可以鎖定只有你先改到資料：</p>' +
+            '<code style="display:block;margin-top:8px;padding:10px;background:var(--bg-secondary);border-radius:6px;font-size:11px;white-space:pre-wrap;word-break:break-all;line-height:1.5;">rules_version = \'2\';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /users/' + esc(state.uid) + '/{document=**} {\n      allow read, write: if request.auth != null\n        && request.auth.uid == "' + esc(state.uid) + '";\n    }\n    match /published/{shareId} {\n      allow read: if true;\n      allow write: if request.auth != null\n        && request.auth.uid == "' + esc(state.uid) + '";\n    }\n  }\n}</code>' +
+          '</div>' +
+          '<button class="btn btn-secondary btn-full" id="fbResetBtn" style="margin-top:16px;"><i class="fas fa-rotate"></i> 重置雲端設定</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(ov);
+    ov.querySelector('#fbInfoClose').addEventListener('click', function() { ov.remove(); });
+    ov.addEventListener('click', function(e) { if (e.target === ov) ov.remove(); });
+    ov.querySelector('#uidCopyBtn').addEventListener('click', function() {
+      var btn2 = this;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(state.uid).then(function() {
+          btn2.innerHTML = '<i class="fas fa-check"></i> 已複製！';
+          btn2.classList.add('copied');
+          setTimeout(function() { btn2.innerHTML = '<i class="fas fa-copy"></i> 複製 UID'; btn2.classList.remove('copied'); }, 2000);
+        });
+      }
+    });
+    ov.querySelector('#fbResetBtn').addEventListener('click', function() {
+      ov.remove();
+      if (unsubTechniques) { unsubTechniques(); unsubTechniques = null; }
+      if (unsubSettings) { unsubSettings(); unsubSettings = null; }
+      state.useFirebase = false;
+      clearConfigLocal();
+      document.getElementById('appRoot').classList.add('hidden');
+      showSetup();
+    });
+  } else {
+    if (unsubTechniques) { unsubTechniques(); unsubTechniques = null; }
+    if (unsubSettings) { unsubSettings(); unsubSettings = null; }
+    state.useFirebase = false;
+    document.getElementById('appRoot').classList.add('hidden');
+    showSetup();
+  }
 });
 
 document.getElementById('btnClear').addEventListener('click', function() {
