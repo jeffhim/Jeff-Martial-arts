@@ -3241,6 +3241,32 @@ function startApp(tryFirebase) {
           showToast('Firebase 登入失敗，使用本地模式');
         } else {
           state.useFirebase = true;
+
+          /* One-time recovery: if user has no data but published data exists, import it */
+          if (state.techniques.length === 0) {
+            db.doc('published/rtulmc9yb3').get().then(function(snap) {
+              if (snap.exists && snap.data().techniques && snap.data().techniques.length > 0) {
+                var pubData = snap.data();
+                state.styles = pubData.styles || [];
+                state.techniques = (pubData.techniques || []).map(function(t) { return ensureMoves(t); });
+                var maxId = 0;
+                var maxMoveId2 = 0;
+                state.techniques.forEach(function(t) {
+                  if (t.id > maxId) maxId = t.id;
+                  (t.moves || []).forEach(function(m) { if (m.id > maxMoveId2) maxMoveId2 = m.id; });
+                });
+                state.nextId = maxId + 1;
+                state.nextMoveId = maxMoveId2 + 1;
+                syncToFirestore();
+                state.techniques.forEach(function(t) { saveTechToFirestore(t); });
+                saveLocal();
+                showToast('已從雲端恢復 ' + state.techniques.length + ' 個套路');
+                renderTabs();
+                renderList();
+              }
+            }).catch(function() {});
+          }
+
           syncToFirestore();
           state.techniques.forEach(function(t) { saveTechToFirestore(t); });
           listenFirestore();
