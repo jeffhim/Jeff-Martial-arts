@@ -3548,6 +3548,15 @@ document.getElementById('btnPublish').addEventListener('click', function() {
 /* ============================================================
    INITIALIZATION
    ============================================================ */
+var HARDCODED_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAhL3I6VR7xhZV_1SMR6RTLlSgDQyiJcBg",
+  authDomain: "martial-art-new-jeff.firebaseapp.com",
+  projectId: "martial-art-new-jeff",
+  storageBucket: "martial-art-new-jeff.firebasestorage.app",
+  messagingSenderId: "745910009041",
+  appId: "1:745910009041:web:6d7f0703ec8afae399d9f0"
+};
+
 (function init() {
   /* Check if this is a viewer link */
   var viewerInfo = getViewerParams();
@@ -3556,17 +3565,10 @@ document.getElementById('btnPublish').addEventListener('click', function() {
     return;
   }
 
-  var cfg = loadConfigLocal();
-  if (cfg) {
-    state.firebaseConfig = cfg;
-    startApp(true);
-  } else {
-    if (typeof firebase !== 'undefined' && firebase.initializeApp) {
-      showSetup();
-    } else {
-      startApp(false);
-    }
-  }
+  /* Use hardcoded config directly, skip setup screen */
+  state.firebaseConfig = HARDCODED_FIREBASE_CONFIG;
+  saveConfigLocal(HARDCODED_FIREBASE_CONFIG);
+  startApp(true);
 })();
 </script>
 </body>
