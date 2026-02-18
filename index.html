@@ -394,24 +394,6 @@ body::before {
   background: currentColor;
 }
 
-.sync-force-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 10px;
-  color: var(--accent);
-  background: var(--accent-light);
-  border: 1px solid var(--accent);
-  padding: 2px 10px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: inherit;
-  white-space: nowrap;
-}
-.sync-force-btn:hover { background: var(--accent); color: #fff; }
-.sync-force-btn.syncing-btn { color: var(--gold); border-color: var(--gold); background: var(--gold-light); pointer-events: none; }
-.sync-force-btn.done-btn { color: var(--success); border-color: var(--success); background: rgba(39,174,96,0.1); pointer-events: none; }
 
 .header-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
@@ -594,31 +576,44 @@ body::before {
 .card-tag { display: flex; align-items: center; gap: 4px; }
 .card-tag i { font-size: 10px; }
 
-.card-reorder {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin-left: auto;
-  flex-shrink: 0;
-}
-.card-reorder button {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
-  border-radius: 4px;
-  width: 26px;
-  height: 20px;
+.card-drag-handle {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  width: 28px;
+  flex-shrink: 0;
   color: var(--text-muted);
-  font-size: 10px;
-  padding: 0;
-  transition: all 0.15s;
+  font-size: 14px;
+  cursor: grab;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
-.card-reorder button:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
-.card-reorder button:disabled { opacity: 0.25; cursor: default; }
-.card-reorder button:disabled:hover { background: var(--bg-secondary); color: var(--text-muted); border-color: var(--border-light); }
+.card-drag-handle:hover { opacity: 0.8; }
+.technique-card.dragging {
+  opacity: 0.5;
+  transform: scale(0.97);
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+  position: relative;
+}
+.technique-card.drag-over-top { border-top: 3px solid var(--accent); }
+.technique-card.drag-over-bottom { border-bottom: 3px solid var(--accent); }
+.drag-ghost {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.85;
+  transform: rotate(1.5deg);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 2px solid var(--accent);
+  max-width: 90vw;
+}
 
 /* ====== Empty State ====== */
 .empty-state {
@@ -1730,7 +1725,6 @@ service cloud.firestore {
         <span class="sync-dot"></span>
         <span id="syncLabel">本地模式</span>
       </div>
-      <button class="sync-force-btn hidden" id="syncForceBtn" title="手動同步"><i class="fas fa-cloud-arrow-up"></i> <span id="syncForceLabel">確認同步</span></button>
     </div>
     <div class="header-actions">
       <button class="btn-icon" id="homeBtn" title="返回主頁"><i class="fas fa-home"></i></button>
@@ -1991,6 +1985,7 @@ function syncToFirestore() {
     nextMoveId: state.nextMoveId,
     updatedAt: Date.now()
   }).catch(function() {});
+  autoSyncFlash();
 }
 
 function saveTechToFirestore(t) {
@@ -2000,11 +1995,13 @@ function saveTechToFirestore(t) {
   /* Ensure moves array is serializable */
   if (data.moves) data.moves = data.moves.slice();
   db.doc(fbDocPath('techniques/' + t.id)).set(data).catch(function() {});
+  autoSyncFlash();
 }
 
 function deleteTechFromFirestore(id) {
   if (!state.useFirebase || !db || !state.uid) return;
   db.doc(fbDocPath('techniques/' + id)).delete().catch(function() {});
+  autoSyncFlash();
 }
 
 function listenFirestore() {
@@ -2048,47 +2045,52 @@ function listenFirestore() {
 function setSyncBadge(mode) {
   var badge = document.getElementById('syncBadge');
   var label = document.getElementById('syncLabel');
-  var forceBtn = document.getElementById('syncForceBtn');
   badge.className = 'sync-badge';
   if (mode === 'cloud') {
     label.textContent = '雲端同步';
-    forceBtn.classList.remove('hidden');
   } else if (mode === 'syncing') {
     badge.classList.add('syncing');
     label.textContent = '同步中…';
   } else if (mode === 'no-network') {
     badge.classList.add('no-network');
     label.textContent = '離線模式（已暫存）';
-    forceBtn.classList.add('hidden');
   } else {
     badge.classList.add('offline');
     label.textContent = '本地模式';
-    forceBtn.classList.add('hidden');
   }
 }
 
 /* ============================================================
-   NETWORK MONITORING & MANUAL SYNC
+   NETWORK MONITORING & AUTO SYNC
    ============================================================ */
-function updateNetworkStatus() {
-  if (!state.useFirebase) return;
-  if (navigator.onLine) {
-    setSyncBadge('cloud');
-  } else {
-    setSyncBadge('no-network');
-  }
+var _syncTimer = null;
+
+/* Flash the badge to syncing then back to cloud after writes settle */
+function autoSyncFlash() {
+  if (!state.useFirebase || !db) return;
+  setSyncBadge('syncing');
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(function() {
+    if (!navigator.onLine) { setSyncBadge('no-network'); return; }
+    db.waitForPendingWrites().then(function() {
+      setSyncBadge('cloud');
+    }).catch(function() {
+      setSyncBadge(navigator.onLine ? 'cloud' : 'no-network');
+    });
+  }, 800);
 }
 
 window.addEventListener('online', function() {
   if (state.useFirebase) {
     setSyncBadge('syncing');
-    /* Re-push all local data to ensure cloud is up to date */
     syncToFirestore();
     state.techniques.forEach(function(t) { saveTechToFirestore(t); });
-    setTimeout(function() {
+    db.waitForPendingWrites().then(function() {
       setSyncBadge('cloud');
       showToast('已重新連接，資料同步完成');
-    }, 1500);
+    }).catch(function() {
+      setSyncBadge('cloud');
+    });
   }
 });
 
@@ -2098,46 +2100,6 @@ window.addEventListener('offline', function() {
     showToast('網絡已斷開，資料會暫存到裝置');
   }
 });
-
-function forceSync() {
-  if (!state.useFirebase || !db || !state.uid) {
-    showToast('未連接雲端');
-    return;
-  }
-  var btn = document.getElementById('syncForceBtn');
-  var lbl = document.getElementById('syncForceLabel');
-  btn.className = 'sync-force-btn syncing-btn';
-  lbl.textContent = '同步中…';
-
-  /* Write all data to Firestore */
-  var promises = [];
-  promises.push(db.doc(fbDocPath('config/settings')).set({
-    styles: state.styles,
-    nextId: state.nextId,
-    nextMoveId: state.nextMoveId,
-    updatedAt: Date.now()
-  }));
-  state.techniques.forEach(function(t) {
-    var data = Object.assign({}, t);
-    delete data.videoBlob;
-    if (data.moves) data.moves = data.moves.slice();
-    promises.push(db.doc(fbDocPath('techniques/' + t.id)).set(data));
-  });
-
-  Promise.all(promises).then(function() {
-    btn.className = 'sync-force-btn done-btn';
-    lbl.textContent = '同步成功 ✓';
-    showToast('全部資料已確認上傳到雲端');
-    setTimeout(function() {
-      btn.className = 'sync-force-btn';
-      lbl.textContent = '確認同步';
-    }, 3000);
-  }).catch(function(err) {
-    btn.className = 'sync-force-btn';
-    lbl.textContent = '確認同步';
-    showToast('同步失敗：' + err.message);
-  });
-}
 
 /* ============================================================
    RENDER: STYLE TABS
@@ -2210,16 +2172,13 @@ function renderList() {
     var diff = t.difficulty ? '<span class="card-tag"><i class="fas fa-signal"></i> ' + esc(t.difficulty) + '</span>' : '';
     var moveCount = (t.moves || []).length;
     var movesTag = moveCount > 0 ? '<span class="card-tag"><i class="fas fa-list-ol"></i> ' + moveCount + ' 招</span>' : '';
-    var reorderBtns = canReorder
-      ? '<div class="card-reorder">' +
-          '<button data-move-up="' + t.id + '"' + (i === 0 ? ' disabled' : '') + ' title="上移"><i class="fas fa-chevron-up"></i></button>' +
-          '<button data-move-down="' + t.id + '"' + (i === list.length - 1 ? ' disabled' : '') + ' title="下移"><i class="fas fa-chevron-down"></i></button>' +
-        '</div>'
+    var dragHandle = canReorder
+      ? '<div class="card-drag-handle" data-drag-id="' + t.id + '"><i class="fas fa-grip-vertical"></i></div>'
       : '';
-    return '<div class="technique-card" data-id="' + t.id + '" style="animation-delay:' + (i * 0.04) + 's">' +
+    return '<div class="technique-card" data-id="' + t.id + '" data-idx="' + i + '" style="animation-delay:' + (i * 0.04) + 's">' +
       '<div class="card-top">' +
+        dragHandle +
         '<div class="card-body"><div class="card-name">' + esc(t.name) + '</div><div class="card-style-label">' + esc(t.style) + '</div></div>' +
-        reorderBtns +
       '</div>' +
       (preview ? '<div class="card-preview">' + esc(preview) + '</div>' : '') +
       '<div class="card-bottom">' +
@@ -2234,51 +2193,176 @@ function renderList() {
   /* Card click → detail */
   el.querySelectorAll('.technique-card').forEach(function(c) {
     c.addEventListener('click', function(e) {
-      /* Ignore if click was on reorder buttons */
-      if (e.target.closest('.card-reorder')) return;
+      if (e.target.closest('.card-drag-handle')) return;
       showDetail(parseInt(c.getAttribute('data-id'), 10));
     });
   });
 
-  /* Reorder buttons */
-  el.querySelectorAll('[data-move-up]').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      reorderRoutine(parseInt(btn.getAttribute('data-move-up'), 10), -1, list);
+  /* Drag-and-drop reorder (touch long-press + mouse) */
+  if (canReorder) initDragReorder(el, list);
+}
+
+/* ============================================================
+   DRAG REORDER (long-press touch + mouse drag)
+   ============================================================ */
+function initDragReorder(container, sortedList) {
+  var dragState = null;
+  var longPressTimer = null;
+  var LONG_PRESS_MS = 300;
+
+  function getCards() { return Array.prototype.slice.call(container.querySelectorAll('.technique-card')); }
+
+  function startDrag(card, startX, startY) {
+    if (dragState) return;
+    var rect = card.getBoundingClientRect();
+    var ghost = card.cloneNode(true);
+    ghost.className = 'drag-ghost';
+    ghost.style.width = rect.width + 'px';
+    ghost.style.left = (startX - rect.width / 2) + 'px';
+    ghost.style.top = (startY - 30) + 'px';
+    document.body.appendChild(ghost);
+    card.classList.add('dragging');
+    dragState = {
+      card: card,
+      ghost: ghost,
+      id: parseInt(card.getAttribute('data-id'), 10),
+      startIdx: parseInt(card.getAttribute('data-idx'), 10),
+      currentOver: null
+    };
+    /* Haptic feedback on supported devices */
+    if (navigator.vibrate) navigator.vibrate(30);
+  }
+
+  function moveDrag(x, y) {
+    if (!dragState) return;
+    dragState.ghost.style.left = (x - dragState.ghost.offsetWidth / 2) + 'px';
+    dragState.ghost.style.top = (y - 30) + 'px';
+
+    /* Find card under pointer */
+    var cards = getCards();
+    cards.forEach(function(c) { c.classList.remove('drag-over-top', 'drag-over-bottom'); });
+
+    var targetCard = null;
+    var insertBefore = false;
+    cards.forEach(function(c) {
+      if (c === dragState.card) return;
+      var r = c.getBoundingClientRect();
+      if (y >= r.top && y <= r.bottom) {
+        targetCard = c;
+        insertBefore = (y - r.top) < r.height / 2;
+      }
     });
-  });
-  el.querySelectorAll('[data-move-down]').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
+
+    if (targetCard) {
+      targetCard.classList.add(insertBefore ? 'drag-over-top' : 'drag-over-bottom');
+      dragState.currentOver = { card: targetCard, before: insertBefore };
+    } else {
+      dragState.currentOver = null;
+    }
+  }
+
+  function endDrag() {
+    if (!dragState) return;
+    dragState.ghost.remove();
+    dragState.card.classList.remove('dragging');
+    var cards = getCards();
+    cards.forEach(function(c) { c.classList.remove('drag-over-top', 'drag-over-bottom'); });
+
+    if (dragState.currentOver) {
+      var fromIdx = dragState.startIdx;
+      var targetIdx = parseInt(dragState.currentOver.card.getAttribute('data-idx'), 10);
+      if (fromIdx !== targetIdx) {
+        applyDragReorder(sortedList, fromIdx, targetIdx, dragState.currentOver.before);
+      }
+    }
+    dragState = null;
+  }
+
+  function cancelDrag() {
+    if (!dragState) return;
+    dragState.ghost.remove();
+    dragState.card.classList.remove('dragging');
+    var cards = getCards();
+    cards.forEach(function(c) { c.classList.remove('drag-over-top', 'drag-over-bottom'); });
+    dragState = null;
+  }
+
+  /* Touch events on drag handles */
+  container.querySelectorAll('.card-drag-handle').forEach(function(handle) {
+    var card = handle.closest('.technique-card');
+
+    handle.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      var touch = e.touches[0];
+      var tx = touch.clientX, ty = touch.clientY;
+      longPressTimer = setTimeout(function() {
+        startDrag(card, tx, ty);
+      }, LONG_PRESS_MS);
+    }, { passive: false });
+
+    handle.addEventListener('touchmove', function(e) {
+      var touch = e.touches[0];
+      /* If drag hasn't started yet, cancel long-press if finger moved too much */
+      if (!dragState && longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+        return;
+      }
+      if (dragState) {
+        e.preventDefault();
+        moveDrag(touch.clientX, touch.clientY);
+      }
+    }, { passive: false });
+
+    handle.addEventListener('touchend', function() {
+      clearTimeout(longPressTimer);
+      longPressTimer = null;
+      endDrag();
+    });
+
+    handle.addEventListener('touchcancel', function() {
+      clearTimeout(longPressTimer);
+      longPressTimer = null;
+      cancelDrag();
+    });
+
+    /* Mouse events */
+    handle.addEventListener('mousedown', function(e) {
+      e.preventDefault();
       e.stopPropagation();
-      reorderRoutine(parseInt(btn.getAttribute('data-move-down'), 10), 1, list);
+      startDrag(card, e.clientX, e.clientY);
+
+      function onMouseMove(ev) { moveDrag(ev.clientX, ev.clientY); }
+      function onMouseUp() {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+        endDrag();
+      }
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
     });
   });
 }
 
-function reorderRoutine(id, direction, currentList) {
-  /* Find the item's position in the currently displayed (sorted) list */
-  var idx = -1;
-  for (var i = 0; i < currentList.length; i++) {
-    if (currentList[i].id === id) { idx = i; break; }
-  }
-  if (idx < 0) return;
-  var swapIdx = idx + direction;
-  if (swapIdx < 0 || swapIdx >= currentList.length) return;
+function applyDragReorder(sortedList, fromIdx, toIdx, insertBefore) {
+  /* Recalculate all sortOrder values based on new visual order */
+  var ids = sortedList.map(function(t) { return t.id; });
+  var movedId = ids.splice(fromIdx, 1)[0];
+  var newPos = toIdx;
+  if (fromIdx < toIdx) newPos = insertBefore ? toIdx - 1 : toIdx;
+  else newPos = insertBefore ? toIdx : toIdx + 1;
+  if (newPos < 0) newPos = 0;
+  if (newPos > ids.length) newPos = ids.length;
+  ids.splice(newPos, 0, movedId);
 
-  /* Swap sortOrder values between the two items */
-  var a = currentList[idx];
-  var b = currentList[swapIdx];
-
-  /* Ensure both have numeric sortOrder */
-  if (typeof a.sortOrder !== 'number') a.sortOrder = idx;
-  if (typeof b.sortOrder !== 'number') b.sortOrder = swapIdx;
-
-  var tmp = a.sortOrder;
-  a.sortOrder = b.sortOrder;
-  b.sortOrder = tmp;
-
-  saveTechToFirestore(a);
-  saveTechToFirestore(b);
+  /* Assign sequential sortOrder to all items */
+  ids.forEach(function(id, i) {
+    var t = state.techniques.find(function(x) { return x.id === id; });
+    if (t) {
+      t.sortOrder = i;
+      saveTechToFirestore(t);
+    }
+  });
   saveLocal();
   renderList();
 }
@@ -3305,11 +3389,6 @@ function showApp() {
    EVENT BINDINGS
    ============================================================ */
 document.getElementById('fabBtn').addEventListener('click', function() { openForm(null); });
-
-/* Manual sync button */
-document.getElementById('syncForceBtn').addEventListener('click', function() {
-  forceSync();
-});
 
 /* Home button */
 document.getElementById('homeBtn').addEventListener('click', function() {
