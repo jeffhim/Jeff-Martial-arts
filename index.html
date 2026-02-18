@@ -3241,32 +3241,43 @@ function startApp(tryFirebase) {
           showToast('Firebase 登入失敗，使用本地模式');
         } else {
           state.useFirebase = true;
-
-          /* One-time recovery: if user has no data but published data exists, import it */
-          if (state.techniques.length === 0) {
+          /* One-time recovery: if user has no data, try restoring from published/rtulmc9yb3 */
+          if (state.techniques.length === 0 && db) {
             db.doc('published/rtulmc9yb3').get().then(function(snap) {
-              if (snap.exists && snap.data().techniques && snap.data().techniques.length > 0) {
-                var pubData = snap.data();
-                state.styles = pubData.styles || [];
-                state.techniques = (pubData.techniques || []).map(function(t) { return ensureMoves(t); });
-                var maxId = 0;
-                var maxMoveId2 = 0;
+              if (snap.exists) {
+                var pub = snap.data();
+                state.styles = pub.styles || [];
+                state.techniques = (pub.techniques || []).map(function(t) { return ensureMoves(t); });
+                /* Recalc IDs */
+                var maxId = 0, maxMoveId = 0;
                 state.techniques.forEach(function(t) {
                   if (t.id > maxId) maxId = t.id;
-                  (t.moves || []).forEach(function(m) { if (m.id > maxMoveId2) maxMoveId2 = m.id; });
+                  (t.moves || []).forEach(function(m) { if (m.id > maxMoveId) maxMoveId = m.id; });
                 });
                 state.nextId = maxId + 1;
-                state.nextMoveId = maxMoveId2 + 1;
+                state.nextMoveId = maxMoveId + 1;
+                /* Push recovered data to user's own Firestore path */
                 syncToFirestore();
-                state.techniques.forEach(function(t) { saveTechToFirestore(t); });
+                state.techniques.forEach(function(t2) { saveTechToFirestore(t2); });
                 saveLocal();
+                listenFirestore();
+                setSyncBadge(navigator.onLine ? 'cloud' : 'no-network');
+                showApp();
                 showToast('已從雲端恢復 ' + state.techniques.length + ' 個套路');
-                renderTabs();
-                renderList();
+              } else {
+                syncToFirestore();
+                listenFirestore();
+                setSyncBadge(navigator.onLine ? 'cloud' : 'no-network');
+                showApp();
               }
-            }).catch(function() {});
+            }).catch(function() {
+              syncToFirestore();
+              listenFirestore();
+              setSyncBadge(navigator.onLine ? 'cloud' : 'no-network');
+              showApp();
+            });
+            return;
           }
-
           syncToFirestore();
           state.techniques.forEach(function(t) { saveTechToFirestore(t); });
           listenFirestore();
