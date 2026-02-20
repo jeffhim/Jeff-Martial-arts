@@ -2,7 +2,7 @@
 <html lang="zh-HK">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>營養師修武之路 — 止戈為武 上善若水</title>
 
 <!-- iOS Web App / PWA -->
@@ -88,6 +88,8 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   line-height: 1.6;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
 }
 
 body::before {
@@ -424,7 +426,7 @@ body::before {
   z-index: 1;
   max-width: 860px;
   margin: 0 auto;
-  padding: 16px 14px 110px;
+  padding: 16px 14px 120px;
 }
 
 /* ====== Style Tabs ====== */
@@ -645,7 +647,7 @@ body::before {
 /* ====== FAB ====== */
 .fab {
   position: fixed;
-  bottom: 76px;
+  bottom: 84px;
   right: 24px;
   width: 56px;
   height: 56px;
@@ -1354,7 +1356,7 @@ body::before {
 /* ====== Toast ====== */
 .toast {
   position: fixed;
-  bottom: 130px;
+  bottom: 140px;
   left: 50%;
   transform: translateX(-50%) translateY(16px);
   background: var(--text-primary);
@@ -1558,18 +1560,18 @@ body.viewer-mode .bottom-tabs { display: none !important; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 8px 0 6px;
+  gap: 3px;
+  padding: 12px 0 10px;
   border: none;
   background: none;
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 11px;
   font-family: 'Noto Sans TC', sans-serif;
   cursor: pointer;
   transition: color 0.2s;
   position: relative;
 }
-.bottom-tab i { font-size: 18px; }
+.bottom-tab i { font-size: 20px; }
 .bottom-tab.active { color: var(--accent); }
 .bottom-tab.active::after {
   content: '';
@@ -1602,7 +1604,7 @@ body.viewer-mode .bottom-tabs { display: none !important; }
 .train-wrap {
   max-width: 860px;
   margin: 0 auto;
-  padding: 16px 14px 110px;
+  padding: 16px 14px 120px;
   position: relative;
   z-index: 1;
 }
