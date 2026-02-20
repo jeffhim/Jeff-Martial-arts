@@ -645,7 +645,7 @@ body::before {
 /* ====== FAB ====== */
 .fab {
   position: fixed;
-  bottom: 24px;
+  bottom: 76px;
   right: 24px;
   width: 56px;
   height: 56px;
@@ -1354,7 +1354,7 @@ body::before {
 /* ====== Toast ====== */
 .toast {
   position: fixed;
-  bottom: 90px;
+  bottom: 130px;
   left: 50%;
   transform: translateX(-50%) translateY(16px);
   background: var(--text-primary);
@@ -1493,7 +1493,8 @@ body.viewer-mode .move-actions,
 body.viewer-mode .dropdown-menu,
 body.viewer-mode #menuToggle,
 body.viewer-mode #searchToggle,
-body.viewer-mode .sync-badge { display: none !important; }
+body.viewer-mode .sync-badge,
+body.viewer-mode .bottom-tabs { display: none !important; }
 
 /* Share URL box in modal */
 .share-url-box {
@@ -1536,6 +1537,381 @@ body.viewer-mode .sync-badge { display: none !important; }
 }
 .publish-status i { font-size: 28px; display: block; margin-bottom: 12px; color: var(--gold); }
 .publish-status.error i { color: var(--danger); }
+
+/* ====== Bottom Tab Bar ====== */
+.bottom-tabs {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-light);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.bottom-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 0 6px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-family: 'Noto Sans TC', sans-serif;
+  cursor: pointer;
+  transition: color 0.2s;
+  position: relative;
+}
+.bottom-tab i { font-size: 18px; }
+.bottom-tab.active { color: var(--accent); }
+.bottom-tab.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 0 0 2px 2px;
+}
+.bottom-tab-badge {
+  position: absolute;
+  top: 4px;
+  right: calc(50% - 22px);
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+/* ====== Training Tab ====== */
+.train-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px 14px 110px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Date picker row */
+.train-date-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.train-date-label {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+.train-date-input {
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-family: 'Noto Sans TC', sans-serif;
+  cursor: pointer;
+}
+.train-date-input:focus { outline: none; border-color: var(--accent); }
+
+/* Reminder cards */
+.train-reminders {
+  margin-bottom: 16px;
+  animation: fadeIn 0.3s ease;
+}
+.train-reminder-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold-dark);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.train-reminder-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(231,76,60,0.06);
+  border: 1px solid rgba(231,76,60,0.15);
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+html.dark .train-reminder-card {
+  background: rgba(231,76,60,0.08);
+  border-color: rgba(231,76,60,0.2);
+}
+.train-reminder-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+.train-reminder-text small { color: var(--danger); font-weight: 600; }
+.train-reminder-btn {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--success);
+  background: rgba(39,174,96,0.08);
+  color: var(--success);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: all 0.2s;
+}
+.train-reminder-btn:hover { background: var(--success); color: #fff; }
+
+/* Check-in section */
+.train-group-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 1px;
+  margin: 14px 0 8px;
+  padding-left: 2px;
+}
+.train-check-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.train-check-item:active { transform: scale(0.98); }
+.train-check-item.checked {
+  border-color: var(--success);
+  background: rgba(39,174,96,0.04);
+}
+html.dark .train-check-item.checked {
+  background: rgba(39,174,96,0.06);
+}
+.train-checkbox {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  color: transparent;
+  font-size: 13px;
+}
+.train-check-item.checked .train-checkbox {
+  border-color: var(--success);
+  background: var(--success);
+  color: #fff;
+}
+.train-check-info { flex: 1; min-width: 0; }
+.train-check-name {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+.train-check-item.checked .train-check-name {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+.train-check-diff {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.train-check-count {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold);
+  min-width: 36px;
+  text-align: right;
+}
+
+/* Stats section */
+.train-stats-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 20px;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: all 0.2s;
+}
+.train-stats-toggle:hover { border-color: var(--border); }
+.train-stats-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.train-stats-toggle-left i { color: var(--gold); }
+.train-stats-toggle i.fa-chevron-down {
+  color: var(--text-muted);
+  font-size: 12px;
+  transition: transform 0.3s;
+}
+.train-stats-toggle.open i.fa-chevron-down { transform: rotate(180deg); }
+
+.train-stats-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s ease;
+}
+.train-stats-body.open { max-height: 3000px; }
+
+.train-stats-inner {
+  padding: 12px 0;
+}
+
+/* Pie chart */
+.train-chart-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+}
+.train-pie-canvas { max-width: 180px; max-height: 180px; }
+.train-pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.train-pie-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+.train-pie-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.train-pie-legend-count {
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-left: auto;
+  padding-left: 10px;
+}
+
+/* Week nav */
+.train-week-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.train-week-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+.train-week-btn:hover { border-color: var(--accent); color: var(--accent); }
+.train-week-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  min-width: 140px;
+  text-align: center;
+}
+
+/* Stats table */
+.train-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 13px;
+}
+.train-stat-row:last-child { border-bottom: none; }
+.train-stat-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.train-stat-total {
+  font-weight: 700;
+  color: var(--gold);
+  min-width: 36px;
+  text-align: center;
+}
+.train-stat-last {
+  font-size: 11px;
+  color: var(--text-muted);
+  min-width: 72px;
+  text-align: right;
+}
+.train-stat-last.overdue { color: var(--danger); font-weight: 600; }
+
+/* No routines state */
+.train-empty {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.train-empty i { font-size: 40px; display: block; margin-bottom: 12px; color: var(--border); }
 </style>
 </head>
 <body>
@@ -1661,6 +2037,23 @@ service cloud.firestore {
   </div>
 
   <button class="fab" id="fabBtn" title="新增套路"><i class="fas fa-plus"></i></button>
+
+  <!-- Training Tab Content (hidden by default) -->
+  <div class="hidden" id="trainView">
+    <div class="train-wrap" id="trainWrap"></div>
+  </div>
+
+  <!-- Bottom Tab Bar -->
+  <div class="bottom-tabs" id="bottomTabs">
+    <button class="bottom-tab active" data-tab="database" id="tabDatabase">
+      <i class="fas fa-book"></i>
+      <span>資料庫</span>
+    </button>
+    <button class="bottom-tab" data-tab="training" id="tabTraining">
+      <i class="fas fa-dumbbell"></i>
+      <span>訓練紀錄</span>
+    </button>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1730,13 +2123,14 @@ function showToast(msg) {
 function genId() { return state.nextId++; }
 function genMoveId() { return state.nextMoveId++; }
 
-/* Ensure a routine has a moves array */
+/* Ensure a routine has a moves array and practiceLog */
 function ensureMoves(t) {
   if (!Array.isArray(t.moves)) t.moves = [];
   /* Backward compat: migrate single videoUrl to videoUrls array */
   if (!Array.isArray(t.videoUrls)) {
     t.videoUrls = t.videoUrl ? [t.videoUrl] : [];
   }
+  if (!Array.isArray(t.practiceLog)) t.practiceLog = [];
   return t;
 }
 
@@ -1886,8 +2280,9 @@ function saveTechToFirestore(t) {
   if (!state.useFirebase || !db || !state.uid) return;
   var data = Object.assign({}, t);
   delete data.videoBlob;
-  /* Ensure moves array is serializable */
+  /* Ensure arrays are serializable */
   if (data.moves) data.moves = data.moves.slice();
+  if (data.practiceLog) data.practiceLog = data.practiceLog.slice();
   db.doc(fbDocPath('techniques/' + t.id)).set(data).catch(function() {});
   autoSyncFlash();
 }
@@ -1933,6 +2328,8 @@ function listenFirestore() {
     saveLocal();
     renderTabs();
     renderList();
+    updateTrainBadge();
+    if (currentTab === 'training') renderTraining();
   });
 }
 
@@ -2272,6 +2669,7 @@ function showDetail(id) {
   document.getElementById('listView').classList.add('hidden');
   document.getElementById('fabBtn').classList.add('hidden');
   document.getElementById('searchBarWrap').classList.add('hidden');
+  document.getElementById('bottomTabs').classList.add('hidden');
   var dv = document.getElementById('detailView');
   dv.classList.remove('hidden');
 
@@ -2570,8 +2968,10 @@ function goBack() {
   document.getElementById('listView').classList.remove('hidden');
   document.getElementById('fabBtn').classList.remove('hidden');
   document.getElementById('searchBarWrap').classList.remove('hidden');
+  document.getElementById('bottomTabs').classList.remove('hidden');
   renderTabs();
   renderList();
+  updateTrainBadge();
 }
 
 /* ============================================================
@@ -3385,6 +3785,7 @@ function showApp() {
   document.getElementById('appRoot').classList.remove('hidden');
   renderTabs();
   renderList();
+  updateTrainBadge();
 }
 
 /* ============================================================
@@ -3509,6 +3910,437 @@ document.getElementById('btnClear').addEventListener('click', function() {
     showToast('已清除所有資料');
   });
 });
+
+/* ============================================================
+   BOTTOM TAB BAR & TRAINING TAB
+   ============================================================ */
+var currentTab = 'database';
+
+function switchTab(tab) {
+  currentTab = tab;
+  var dbEls = ['introBanner', 'searchBarWrap', 'mainArea', 'fabBtn'];
+  var isDb = tab === 'database';
+
+  dbEls.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (isDb) el.classList.remove('hidden');
+    else el.classList.add('hidden');
+  });
+
+  var trainView = document.getElementById('trainView');
+  if (isDb) { trainView.classList.add('hidden'); }
+  else { trainView.classList.remove('hidden'); renderTraining(); }
+
+  document.querySelectorAll('.bottom-tab').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-tab') === tab);
+  });
+}
+
+document.getElementById('tabDatabase').addEventListener('click', function() { switchTab('database'); });
+document.getElementById('tabTraining').addEventListener('click', function() { switchTab('training'); });
+
+/* --- Training date helpers --- */
+function todayStr() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function dateToDisplay(ds) {
+  var d = new Date(ds + 'T00:00:00');
+  var days = ['日', '一', '二', '三', '四', '五', '六'];
+  return d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日（' + days[d.getDay()] + '）';
+}
+
+function daysBetween(d1, d2) {
+  var a = new Date(d1 + 'T00:00:00');
+  var b = new Date(d2 + 'T00:00:00');
+  return Math.round((b - a) / 86400000);
+}
+
+function getWeekRange(offsetWeeks) {
+  var now = new Date();
+  var day = now.getDay();
+  var diff = (day === 0 ? 6 : day - 1);
+  var monday = new Date(now);
+  monday.setDate(now.getDate() - diff + (offsetWeeks * 7));
+  monday.setHours(0, 0, 0, 0);
+  var sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  function fmt(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  return { start: fmt(monday), end: fmt(sunday), label: (monday.getMonth() + 1) + '/' + monday.getDate() + ' – ' + (sunday.getMonth() + 1) + '/' + sunday.getDate() };
+}
+
+/* Ensure practiceLog exists on a technique */
+function ensurePracticeLog(t) {
+  if (!Array.isArray(t.practiceLog)) t.practiceLog = [];
+  return t;
+}
+
+function hasPracticeOn(t, dateStr) {
+  ensurePracticeLog(t);
+  return t.practiceLog.some(function(e) { return e.date === dateStr; });
+}
+
+function togglePractice(t, dateStr) {
+  ensurePracticeLog(t);
+  var idx = -1;
+  t.practiceLog.forEach(function(e, i) { if (e.date === dateStr) idx = i; });
+  if (idx >= 0) {
+    t.practiceLog.splice(idx, 1);
+  } else {
+    t.practiceLog.push({ date: dateStr });
+    t.practiceLog.sort(function(a, b) { return b.date.localeCompare(a.date); });
+  }
+  saveTechToFirestore(t);
+  saveLocal();
+}
+
+function lastPracticeDate(t) {
+  ensurePracticeLog(t);
+  if (t.practiceLog.length === 0) return null;
+  var sorted = t.practiceLog.slice().sort(function(a, b) { return b.date.localeCompare(a.date); });
+  return sorted[0].date;
+}
+
+function practiceCountInRange(t, startDate, endDate) {
+  ensurePracticeLog(t);
+  return t.practiceLog.filter(function(e) {
+    return e.date >= startDate && e.date <= endDate;
+  }).length;
+}
+
+/* Update reminder badge */
+function updateTrainBadge() {
+  var today = todayStr();
+  var count = 0;
+  state.techniques.forEach(function(t) {
+    ensurePracticeLog(t);
+    var last = lastPracticeDate(t);
+    if (!last || daysBetween(last, today) >= 14) count++;
+  });
+  var badge = document.querySelector('#tabTraining .bottom-tab-badge');
+  if (count > 0) {
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'bottom-tab-badge';
+      document.getElementById('tabTraining').appendChild(badge);
+    }
+    badge.textContent = count;
+  } else {
+    if (badge) badge.remove();
+  }
+}
+
+/* --- Pie chart (pure Canvas) --- */
+var PIE_COLORS = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#34495e', '#d35400', '#8e44ad', '#16a085', '#c0392b'];
+
+function drawPieChart(canvas, data) {
+  /* data = [{label, value, color}] */
+  var ctx = canvas.getContext('2d');
+  var w = canvas.width = 180 * (window.devicePixelRatio || 1);
+  var h = canvas.height = 180 * (window.devicePixelRatio || 1);
+  canvas.style.width = '180px';
+  canvas.style.height = '180px';
+  ctx.clearRect(0, 0, w, h);
+
+  var total = data.reduce(function(s, d) { return s + d.value; }, 0);
+  if (total === 0) {
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--border').trim();
+    ctx.beginPath();
+    ctx.arc(w / 2, h / 2, w * 0.4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
+    ctx.font = (14 * (window.devicePixelRatio || 1)) + 'px "Noto Sans TC", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('暫無數據', w / 2, h / 2);
+    return;
+  }
+
+  var cx = w / 2, cy = h / 2, r = w * 0.4;
+  var startAngle = -Math.PI / 2;
+  data.forEach(function(d) {
+    var sliceAngle = (d.value / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, startAngle, startAngle + sliceAngle);
+    ctx.closePath();
+    ctx.fillStyle = d.color;
+    ctx.fill();
+    startAngle += sliceAngle;
+  });
+
+  /* Donut hole */
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.5, 0, Math.PI * 2);
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-card').trim();
+  ctx.fill();
+
+  /* Center text */
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim();
+  ctx.font = 'bold ' + (22 * (window.devicePixelRatio || 1)) + 'px "Noto Serif TC", serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(total, cx, cy - 4 * (window.devicePixelRatio || 1));
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
+  ctx.font = (11 * (window.devicePixelRatio || 1)) + 'px "Noto Sans TC", sans-serif';
+  ctx.fillText('次練習', cx, cy + 16 * (window.devicePixelRatio || 1));
+}
+
+/* --- Main render --- */
+var trainSelectedDate = todayStr();
+var statsWeekOffset = 0;
+
+function renderTraining() {
+  var wrap = document.getElementById('trainWrap');
+  var today = todayStr();
+  var selDate = trainSelectedDate;
+
+  /* Group techniques by style */
+  var grouped = {};
+  var styleOrder = state.styles.slice();
+  state.techniques.forEach(function(t) {
+    ensurePracticeLog(t);
+    var s = t.style || '未分類';
+    if (!grouped[s]) grouped[s] = [];
+    grouped[s].push(t);
+  });
+
+  if (state.techniques.length === 0) {
+    wrap.innerHTML = '<div class="train-empty"><i class="fas fa-dumbbell"></i>未有任何套路<br>請先喺「資料庫」新增套路</div>';
+    return;
+  }
+
+  var html = '';
+
+  /* Date picker row */
+  html += '<div class="train-date-row">' +
+    '<div class="train-date-label">' + dateToDisplay(selDate) + '</div>' +
+    '<input type="date" class="train-date-input" id="trainDatePicker" value="' + selDate + '" max="' + today + '">' +
+  '</div>';
+
+  /* Reminders (only show when viewing today) */
+  if (selDate === today) {
+    var reminders = [];
+    state.techniques.forEach(function(t) {
+      var last = lastPracticeDate(t);
+      var daysAgo = last ? daysBetween(last, today) : 999;
+      if (daysAgo >= 14) {
+        reminders.push({ tech: t, daysAgo: daysAgo, last: last });
+      }
+    });
+    if (reminders.length > 0) {
+      html += '<div class="train-reminders">' +
+        '<div class="train-reminder-title"><i class="fas fa-bell"></i> ' + reminders.length + ' 個套路需要練習</div>';
+      reminders.sort(function(a, b) { return b.daysAgo - a.daysAgo; });
+      reminders.forEach(function(r) {
+        var agoText = r.last ? r.daysAgo + ' 日冇練習' : '從未練習';
+        html += '<div class="train-reminder-card">' +
+          '<div class="train-reminder-text">「' + esc(r.tech.name) + '」<small>' + agoText + '</small></div>' +
+          '<button class="train-reminder-btn" data-remind-id="' + r.tech.id + '"><i class="fas fa-check"></i> 今日已練</button>' +
+        '</div>';
+      });
+      html += '</div>';
+    }
+  }
+
+  /* Check-in area */
+  styleOrder.forEach(function(s) {
+    var techs = grouped[s];
+    if (!techs || techs.length === 0) return;
+    techs.sort(function(a, b) {
+      var oa = typeof a.sortOrder === 'number' ? a.sortOrder : 999999;
+      var ob = typeof b.sortOrder === 'number' ? b.sortOrder : 999999;
+      return oa - ob;
+    });
+    html += '<div class="train-group-title">── ' + esc(s) + ' ──</div>';
+    techs.forEach(function(t) {
+      var checked = hasPracticeOn(t, selDate);
+      var total = t.practiceLog ? t.practiceLog.length : 0;
+      var diff = t.difficulty ? ' · ' + esc(t.difficulty) : '';
+      html += '<div class="train-check-item' + (checked ? ' checked' : '') + '" data-check-id="' + t.id + '">' +
+        '<div class="train-checkbox"><i class="fas fa-check"></i></div>' +
+        '<div class="train-check-info"><div class="train-check-name">' + esc(t.name) + '</div><div class="train-check-diff">' + esc(s) + diff + '</div></div>' +
+        '<div class="train-check-count">×' + total + '</div>' +
+      '</div>';
+    });
+  });
+
+  /* Uncategorized */
+  var uncategorized = state.techniques.filter(function(t) { return !t.style || styleOrder.indexOf(t.style) < 0; });
+  if (uncategorized.length > 0) {
+    html += '<div class="train-group-title">── 未分類 ──</div>';
+    uncategorized.forEach(function(t) {
+      var checked = hasPracticeOn(t, selDate);
+      var total = t.practiceLog ? t.practiceLog.length : 0;
+      html += '<div class="train-check-item' + (checked ? ' checked' : '') + '" data-check-id="' + t.id + '">' +
+        '<div class="train-checkbox"><i class="fas fa-check"></i></div>' +
+        '<div class="train-check-info"><div class="train-check-name">' + esc(t.name) + '</div><div class="train-check-diff">未分類</div></div>' +
+        '<div class="train-check-count">×' + total + '</div>' +
+      '</div>';
+    });
+  }
+
+  /* Stats toggle */
+  html += '<div class="train-stats-toggle" id="statsToggle">' +
+    '<div class="train-stats-toggle-left"><i class="fas fa-chart-pie"></i> 練習統計</div>' +
+    '<i class="fas fa-chevron-down"></i>' +
+  '</div>';
+  html += '<div class="train-stats-body" id="statsBody">' +
+    '<div class="train-stats-inner" id="statsInner"></div>' +
+  '</div>';
+
+  wrap.innerHTML = html;
+
+  /* --- Bind events --- */
+
+  /* Date picker */
+  document.getElementById('trainDatePicker').addEventListener('change', function() {
+    trainSelectedDate = this.value || todayStr();
+    renderTraining();
+  });
+
+  /* Check items */
+  wrap.querySelectorAll('.train-check-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      var id = parseInt(item.getAttribute('data-check-id'), 10);
+      var t = state.techniques.find(function(x) { return x.id === id; });
+      if (!t) return;
+      togglePractice(t, selDate);
+      renderTraining();
+      updateTrainBadge();
+    });
+  });
+
+  /* Reminder quick-check buttons */
+  wrap.querySelectorAll('[data-remind-id]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var id = parseInt(btn.getAttribute('data-remind-id'), 10);
+      var t = state.techniques.find(function(x) { return x.id === id; });
+      if (!t) return;
+      if (!hasPracticeOn(t, today)) {
+        togglePractice(t, today);
+      }
+      renderTraining();
+      updateTrainBadge();
+    });
+  });
+
+  /* Stats toggle */
+  document.getElementById('statsToggle').addEventListener('click', function() {
+    var body = document.getElementById('statsBody');
+    var toggle = document.getElementById('statsToggle');
+    var isOpen = body.classList.contains('open');
+    if (isOpen) {
+      body.classList.remove('open');
+      toggle.classList.remove('open');
+    } else {
+      body.classList.add('open');
+      toggle.classList.add('open');
+      renderStats();
+    }
+  });
+}
+
+function renderStats() {
+  var inner = document.getElementById('statsInner');
+  if (!inner) return;
+  var today = todayStr();
+  var week = getWeekRange(statsWeekOffset);
+
+  var html = '';
+
+  /* Week navigation */
+  html += '<div class="train-week-nav">' +
+    '<button class="train-week-btn" id="weekPrev"><i class="fas fa-chevron-left"></i></button>' +
+    '<span class="train-week-label">' + week.label + (statsWeekOffset === 0 ? '（本週）' : '') + '</span>' +
+    '<button class="train-week-btn' + (statsWeekOffset >= 0 ? '' : '') + '" id="weekNext"><i class="fas fa-chevron-right"></i></button>' +
+  '</div>';
+
+  /* Pie chart: practice count by style this week */
+  html += '<div class="train-chart-wrap">' +
+    '<canvas class="train-pie-canvas" id="pieCanvas"></canvas>' +
+    '<div class="train-pie-legend" id="pieLegend"></div>' +
+  '</div>';
+
+  /* Stats table */
+  var rows = [];
+  state.techniques.forEach(function(t) {
+    ensurePracticeLog(t);
+    var last = lastPracticeDate(t);
+    var daysAgo = last ? daysBetween(last, today) : -1;
+    rows.push({
+      name: t.name,
+      style: t.style || '未分類',
+      total: t.practiceLog.length,
+      last: last,
+      daysAgo: daysAgo
+    });
+  });
+
+  /* Sort by days since last practice (most overdue first) */
+  rows.sort(function(a, b) {
+    var aa = a.daysAgo < 0 ? 99999 : a.daysAgo;
+    var bb = b.daysAgo < 0 ? 99999 : b.daysAgo;
+    return bb - aa;
+  });
+
+  rows.forEach(function(r) {
+    var lastText, overdue = false;
+    if (r.daysAgo < 0) { lastText = '從未練習'; overdue = true; }
+    else if (r.daysAgo === 0) { lastText = '今日'; }
+    else if (r.daysAgo === 1) { lastText = '昨日'; }
+    else { lastText = r.daysAgo + ' 日前'; }
+    if (r.daysAgo >= 14 || r.daysAgo < 0) overdue = true;
+
+    html += '<div class="train-stat-row">' +
+      '<div class="train-stat-name">' + esc(r.name) + '</div>' +
+      '<div class="train-stat-total">×' + r.total + '</div>' +
+      '<div class="train-stat-last' + (overdue ? ' overdue' : '') + '">' + lastText + '</div>' +
+    '</div>';
+  });
+
+  inner.innerHTML = html;
+
+  /* Draw pie chart */
+  var pieData = {};
+  state.styles.forEach(function(s, i) {
+    pieData[s] = { label: s, value: 0, color: PIE_COLORS[i % PIE_COLORS.length] };
+  });
+  state.techniques.forEach(function(t) {
+    var s = t.style || '未分類';
+    if (!pieData[s]) pieData[s] = { label: s, value: 0, color: PIE_COLORS[Object.keys(pieData).length % PIE_COLORS.length] };
+    pieData[s].value += practiceCountInRange(t, week.start, week.end);
+  });
+  var chartData = Object.keys(pieData).map(function(k) { return pieData[k]; }).filter(function(d) { return d.value > 0; });
+
+  var canvas = document.getElementById('pieCanvas');
+  drawPieChart(canvas, chartData);
+
+  /* Legend */
+  var legendEl = document.getElementById('pieLegend');
+  var allPieEntries = Object.keys(pieData).map(function(k) { return pieData[k]; });
+  legendEl.innerHTML = allPieEntries.map(function(d) {
+    return '<div class="train-pie-legend-item">' +
+      '<div class="train-pie-dot" style="background:' + d.color + '"></div>' +
+      '<span>' + esc(d.label) + '</span>' +
+      '<span class="train-pie-legend-count">' + d.value + '</span>' +
+    '</div>';
+  }).join('');
+
+  /* Week nav events */
+  document.getElementById('weekPrev').addEventListener('click', function() {
+    statsWeekOffset--;
+    renderStats();
+  });
+  document.getElementById('weekNext').addEventListener('click', function() {
+    if (statsWeekOffset < 0) { statsWeekOffset++; renderStats(); }
+  });
+}
 
 /* ============================================================
    PUBLISH / SHARE
