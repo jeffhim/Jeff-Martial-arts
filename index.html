@@ -1914,6 +1914,7 @@ html.dark .train-check-item.checked {
   font-size: 14px;
 }
 .train-empty i { font-size: 40px; display: block; margin-bottom: 12px; color: var(--border); }
+
 </style>
 </head>
 <body>
@@ -3004,6 +3005,10 @@ function openForm(existing) {
         '<div class="field"><label>所屬分類組別 *</label><select id="fStyle">' + opts + '</select><div id="newStyleRow" class="hidden" style="display:none;margin-top:8px;"><div class="add-style-row"><input type="text" id="fNewStyle" placeholder="輸入新分類組別名稱…" style="font-size:16px;"><button class="btn btn-primary btn-sm" type="button" id="fAddStyleBtn">確定</button></div></div></div>' +
         '<div class="field"><label>難度</label><select id="fDiff">' + diffOpts + '</select></div>' +
       '</div>' +
+      '<div class="field-row">' +
+        '<div class="field"><label><i class="fas fa-bell" style="color:var(--gold);font-size:12px;"></i> 提醒日數</label><input type="number" id="fRemindDays" min="1" max="365" value="' + (existing && existing.reminderDays ? existing.reminderDays : 14) + '" style="font-size:16px;"><div style="font-size:11px;color:var(--text-muted);margin-top:3px;">超過此天數冇練習就會提醒</div></div>' +
+        '<div class="field"></div>' +
+      '</div>' +
       '<div class="field"><label>歷史背景</label><textarea id="fHistory" rows="3" placeholder="呢套路嘅來源、歷史典故…">' + (existing ? esc(existing.history) : '') + '</textarea></div>' +
       '<div class="field"><label>練習心得</label><textarea id="fNotes" rows="4" placeholder="練習技巧、注意事項、感想…">' + (existing ? esc(existing.notes) : '') + '</textarea></div>' +
       '<div class="video-box">' +
@@ -3228,6 +3233,8 @@ function openForm(existing) {
     var style = document.getElementById('fStyle').value;
     if (style === '__new__') { showToast('請先確認新增分類組別'); return; }
     var diff = document.getElementById('fDiff').value;
+    var remindDays = parseInt(document.getElementById('fRemindDays').value, 10) || 14;
+    if (remindDays < 1) remindDays = 1;
     var history = document.getElementById('fHistory').value.trim();
     var notes = document.getElementById('fNotes').value.trim();
 
@@ -3246,6 +3253,7 @@ function openForm(existing) {
       existing.name = name;
       existing.style = style;
       existing.difficulty = diff;
+      existing.reminderDays = remindDays;
       existing.history = history;
       existing.notes = notes;
       existing.videoUrls = formVideoUrls.slice();
@@ -3258,6 +3266,7 @@ function openForm(existing) {
       var tech = {
         id: genId(),
         name: name, style: style, difficulty: diff,
+        reminderDays: remindDays,
         history: history, notes: notes,
         videoUrls: formVideoUrls.slice(),
         videoUrl: formVideoUrls[0] || '',
@@ -4021,7 +4030,8 @@ function updateTrainBadge() {
   state.techniques.forEach(function(t) {
     ensurePracticeLog(t);
     var last = lastPracticeDate(t);
-    if (!last || daysBetween(last, today) >= 14) count++;
+    var rd = t.reminderDays || 14;
+    if (!last || daysBetween(last, today) >= rd) count++;
   });
   var badge = document.querySelector('#tabTraining .bottom-tab-badge');
   if (count > 0) {
@@ -4130,8 +4140,9 @@ function renderTraining() {
     state.techniques.forEach(function(t) {
       var last = lastPracticeDate(t);
       var daysAgo = last ? daysBetween(last, today) : 999;
-      if (daysAgo >= 14) {
-        reminders.push({ tech: t, daysAgo: daysAgo, last: last });
+      var rd2 = t.reminderDays || 14;
+      if (daysAgo >= rd2) {
+        reminders.push({ tech: t, daysAgo: daysAgo, last: last, limit: rd2 });
       }
     });
     if (reminders.length > 0) {
@@ -4280,7 +4291,8 @@ function renderStats() {
       style: t.style || '未分類',
       total: t.practiceLog.length,
       last: last,
-      daysAgo: daysAgo
+      daysAgo: daysAgo,
+      reminderDays: t.reminderDays || 14
     });
   });
 
@@ -4297,7 +4309,8 @@ function renderStats() {
     else if (r.daysAgo === 0) { lastText = '今日'; }
     else if (r.daysAgo === 1) { lastText = '昨日'; }
     else { lastText = r.daysAgo + ' 日前'; }
-    if (r.daysAgo >= 14 || r.daysAgo < 0) overdue = true;
+    var rdStat = r.reminderDays || 14;
+    if (r.daysAgo >= rdStat || r.daysAgo < 0) overdue = true;
 
     html += '<div class="train-stat-row">' +
       '<div class="train-stat-name">' + esc(r.name) + '</div>' +
