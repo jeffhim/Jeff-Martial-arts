@@ -4267,28 +4267,26 @@ function renderStats() {
 
   var html = '';
 
-  /* Week navigation */
-  html += '<div class="train-week-nav">' +
-    '<button class="train-week-btn" id="weekPrev"><i class="fas fa-chevron-left"></i></button>' +
-    '<span class="train-week-label">' + week.label + (statsWeekOffset === 0 ? '（本週）' : '') + '</span>' +
-    '<button class="train-week-btn' + (statsWeekOffset >= 0 ? '' : '') + '" id="weekNext"><i class="fas fa-chevron-right"></i></button>' +
-  '</div>';
+  /* ── Section 1: All-time totals ── */
+  html += '<div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:6px;"><i class="fas fa-trophy"></i> 累計總練習（全部時間）</div>';
 
-  /* Pie chart: practice count by style this week */
+  /* All-time pie chart by category */
   html += '<div class="train-chart-wrap">' +
-    '<canvas class="train-pie-canvas" id="pieCanvas"></canvas>' +
-    '<div class="train-pie-legend" id="pieLegend"></div>' +
+    '<canvas class="train-pie-canvas" id="pieAllTime"></canvas>' +
+    '<div class="train-pie-legend" id="legendAllTime"></div>' +
   '</div>';
 
-  /* Stats table */
-  var rows = [];
+  /* All-time stats table grouped by category */
+  var grouped = {};
+  var groupOrder = state.styles.slice();
   state.techniques.forEach(function(t) {
     ensurePracticeLog(t);
+    var s = t.style || '未分類';
+    if (!grouped[s]) { grouped[s] = []; if (groupOrder.indexOf(s) === -1) groupOrder.push(s); }
     var last = lastPracticeDate(t);
     var daysAgo = last ? daysBetween(last, today) : -1;
-    rows.push({
+    grouped[s].push({
       name: t.name,
-      style: t.style || '未分類',
       total: t.practiceLog.length,
       last: last,
       daysAgo: daysAgo,
@@ -4296,50 +4294,95 @@ function renderStats() {
     });
   });
 
-  /* Sort by days since last practice (most overdue first) */
-  rows.sort(function(a, b) {
-    var aa = a.daysAgo < 0 ? 99999 : a.daysAgo;
-    var bb = b.daysAgo < 0 ? 99999 : b.daysAgo;
-    return bb - aa;
-  });
+  groupOrder.forEach(function(styleName) {
+    var rows = grouped[styleName];
+    if (!rows || rows.length === 0) return;
+    rows.sort(function(a, b) { return b.total - a.total; });
+    var groupTotal = rows.reduce(function(sum, r) { return sum + r.total; }, 0);
+    var colorIdx = state.styles.indexOf(styleName);
+    if (colorIdx < 0) colorIdx = groupOrder.indexOf(styleName);
+    var dotColor = PIE_COLORS[colorIdx % PIE_COLORS.length];
 
-  rows.forEach(function(r) {
-    var lastText, overdue = false;
-    if (r.daysAgo < 0) { lastText = '從未練習'; overdue = true; }
-    else if (r.daysAgo === 0) { lastText = '今日'; }
-    else if (r.daysAgo === 1) { lastText = '昨日'; }
-    else { lastText = r.daysAgo + ' 日前'; }
-    var rdStat = r.reminderDays || 14;
-    if (r.daysAgo >= rdStat || r.daysAgo < 0) overdue = true;
-
-    html += '<div class="train-stat-row">' +
-      '<div class="train-stat-name">' + esc(r.name) + '</div>' +
-      '<div class="train-stat-total">×' + r.total + '</div>' +
-      '<div class="train-stat-last' + (overdue ? ' overdue' : '') + '">' + lastText + '</div>' +
+    html += '<div style="margin-top:10px;margin-bottom:4px;font-size:12px;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:6px;">' +
+      '<span style="width:8px;height:8px;border-radius:50%;background:' + dotColor + ';display:inline-block;flex-shrink:0;"></span>' +
+      esc(styleName) +
+      '<span style="color:var(--text-muted);font-weight:400;margin-left:auto;">共 ' + groupTotal + ' 次</span>' +
     '</div>';
+
+    rows.forEach(function(r) {
+      var lastText, overdue = false;
+      if (r.daysAgo < 0) { lastText = '從未練習'; overdue = true; }
+      else if (r.daysAgo === 0) { lastText = '今日'; }
+      else if (r.daysAgo === 1) { lastText = '昨日'; }
+      else { lastText = r.daysAgo + ' 日前'; }
+      var rdStat = r.reminderDays || 14;
+      if (r.daysAgo >= rdStat || r.daysAgo < 0) overdue = true;
+
+      html += '<div class="train-stat-row" style="padding-left:18px;">' +
+        '<div class="train-stat-name">' + esc(r.name) + '</div>' +
+        '<div class="train-stat-total">×' + r.total + '</div>' +
+        '<div class="train-stat-last' + (overdue ? ' overdue' : '') + '">' + lastText + '</div>' +
+      '</div>';
+    });
   });
+
+  /* ── Section 2: Weekly breakdown ── */
+  html += '<div style="font-size:13px;font-weight:700;color:var(--gold);margin:20px 0 8px;display:flex;align-items:center;gap:6px;border-top:1px solid var(--border-light);padding-top:16px;"><i class="fas fa-calendar-week"></i> 每週練習分佈</div>';
+
+  /* Week navigation */
+  html += '<div class="train-week-nav">' +
+    '<button class="train-week-btn" id="weekPrev"><i class="fas fa-chevron-left"></i></button>' +
+    '<span class="train-week-label">' + week.label + (statsWeekOffset === 0 ? '（本週）' : '') + '</span>' +
+    '<button class="train-week-btn" id="weekNext"><i class="fas fa-chevron-right"></i></button>' +
+  '</div>';
+
+  /* Weekly pie chart by category */
+  html += '<div class="train-chart-wrap">' +
+    '<canvas class="train-pie-canvas" id="pieWeekly"></canvas>' +
+    '<div class="train-pie-legend" id="legendWeekly"></div>' +
+  '</div>';
 
   inner.innerHTML = html;
 
-  /* Draw pie chart */
-  var pieData = {};
+  /* ── Draw All-time pie chart ── */
+  var allTimeData = {};
   state.styles.forEach(function(s, i) {
-    pieData[s] = { label: s, value: 0, color: PIE_COLORS[i % PIE_COLORS.length] };
+    allTimeData[s] = { label: s, value: 0, color: PIE_COLORS[i % PIE_COLORS.length] };
   });
   state.techniques.forEach(function(t) {
     var s = t.style || '未分類';
-    if (!pieData[s]) pieData[s] = { label: s, value: 0, color: PIE_COLORS[Object.keys(pieData).length % PIE_COLORS.length] };
-    pieData[s].value += practiceCountInRange(t, week.start, week.end);
+    if (!allTimeData[s]) allTimeData[s] = { label: s, value: 0, color: PIE_COLORS[Object.keys(allTimeData).length % PIE_COLORS.length] };
+    allTimeData[s].value += (t.practiceLog || []).length;
   });
-  var chartData = Object.keys(pieData).map(function(k) { return pieData[k]; }).filter(function(d) { return d.value > 0; });
+  var allTimeChartData = Object.keys(allTimeData).map(function(k) { return allTimeData[k]; }).filter(function(d) { return d.value > 0; });
+  drawPieChart(document.getElementById('pieAllTime'), allTimeChartData);
 
-  var canvas = document.getElementById('pieCanvas');
-  drawPieChart(canvas, chartData);
+  var legendAllEl = document.getElementById('legendAllTime');
+  var allEntries = Object.keys(allTimeData).map(function(k) { return allTimeData[k]; });
+  legendAllEl.innerHTML = allEntries.map(function(d) {
+    return '<div class="train-pie-legend-item">' +
+      '<div class="train-pie-dot" style="background:' + d.color + '"></div>' +
+      '<span>' + esc(d.label) + '</span>' +
+      '<span class="train-pie-legend-count">' + d.value + '</span>' +
+    '</div>';
+  }).join('');
 
-  /* Legend */
-  var legendEl = document.getElementById('pieLegend');
-  var allPieEntries = Object.keys(pieData).map(function(k) { return pieData[k]; });
-  legendEl.innerHTML = allPieEntries.map(function(d) {
+  /* ── Draw Weekly pie chart ── */
+  var weekData = {};
+  state.styles.forEach(function(s, i) {
+    weekData[s] = { label: s, value: 0, color: PIE_COLORS[i % PIE_COLORS.length] };
+  });
+  state.techniques.forEach(function(t) {
+    var s = t.style || '未分類';
+    if (!weekData[s]) weekData[s] = { label: s, value: 0, color: PIE_COLORS[Object.keys(weekData).length % PIE_COLORS.length] };
+    weekData[s].value += practiceCountInRange(t, week.start, week.end);
+  });
+  var weekChartData = Object.keys(weekData).map(function(k) { return weekData[k]; }).filter(function(d) { return d.value > 0; });
+  drawPieChart(document.getElementById('pieWeekly'), weekChartData);
+
+  var legendWeekEl = document.getElementById('legendWeekly');
+  var weekEntries = Object.keys(weekData).map(function(k) { return weekData[k]; });
+  legendWeekEl.innerHTML = weekEntries.map(function(d) {
     return '<div class="train-pie-legend-item">' +
       '<div class="train-pie-dot" style="background:' + d.color + '"></div>' +
       '<span>' + esc(d.label) + '</span>' +
