@@ -4120,6 +4120,7 @@ document.getElementById('btnFirebaseSettings').addEventListener('click', functio
       ov.remove();
       if (unsubTechniques) { unsubTechniques(); unsubTechniques = null; }
       if (unsubSettings) { unsubSettings(); unsubSettings = null; }
+      if (unsubBodyMetrics) { unsubBodyMetrics(); unsubBodyMetrics = null; }
       state.useFirebase = false;
       clearConfigLocal();
       document.getElementById('appRoot').classList.add('hidden');
@@ -4128,6 +4129,7 @@ document.getElementById('btnFirebaseSettings').addEventListener('click', functio
   } else {
     if (unsubTechniques) { unsubTechniques(); unsubTechniques = null; }
     if (unsubSettings) { unsubSettings(); unsubSettings = null; }
+    if (unsubBodyMetrics) { unsubBodyMetrics(); unsubBodyMetrics = null; }
     state.useFirebase = false;
     document.getElementById('appRoot').classList.add('hidden');
     showSetup();
@@ -4674,6 +4676,7 @@ function deleteBodyFromFirestore(id) {
 }
 function listenBodyMetrics() {
   if (!state.useFirebase || !db || !state.uid) return;
+  if (unsubBodyMetrics) unsubBodyMetrics();
   unsubBodyMetrics = db.collection(fbDocPath('bodyMetrics')).onSnapshot(function(snap) {
     var items = [];
     snap.forEach(function(doc) { items.push(doc.data()); });
