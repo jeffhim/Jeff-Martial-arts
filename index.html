@@ -1915,6 +1915,221 @@ html.dark .train-check-item.checked {
 }
 .train-empty i { font-size: 40px; display: block; margin-bottom: 12px; color: var(--border); }
 
+/* ====== Body Metrics (體能) Tab ====== */
+.body-wrap {
+  padding: 16px 16px 32px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.body-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold);
+  margin: 16px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.body-section-title:first-child { margin-top: 0; }
+.body-form {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 16px;
+  border: 1px solid var(--border-light);
+}
+.body-form-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.body-form-row:last-child { margin-bottom: 0; }
+.body-form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+.body-form-label small {
+  font-weight: 400;
+  color: var(--text-muted);
+  display: block;
+  font-size: 10px;
+}
+.body-form-input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: border-color 0.2s;
+}
+.body-form-input:focus { outline: none; border-color: var(--accent); }
+.body-form-input::placeholder { color: var(--text-muted); opacity: 0.6; }
+.body-form-unit {
+  font-size: 12px;
+  color: var(--text-muted);
+  min-width: 24px;
+  flex-shrink: 0;
+}
+.body-form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+.body-btn {
+  flex: 1;
+  padding: 11px 0;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Noto Sans TC', sans-serif;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.body-btn:active { transform: scale(0.97); }
+.body-btn-primary { background: var(--accent); color: #fff; }
+.body-btn-primary:hover { opacity: 0.85; }
+.body-btn-secondary { background: var(--bg-primary); color: var(--text-muted); border: 1px solid var(--border-light); }
+
+/* History list */
+.body-history-list {
+  margin-top: 10px;
+}
+.body-history-item {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+}
+.body-history-item:active { background: var(--bg-primary); }
+.body-history-date {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 5px;
+}
+.body-history-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.body-history-metric span {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.body-history-del {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: color 0.2s;
+}
+.body-history-del:hover { color: var(--danger); }
+
+/* Line chart */
+.body-chart-container {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border-light);
+}
+.body-chart-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.body-chart-title .body-chart-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.body-chart-canvas {
+  width: 100%;
+  height: 160px;
+  display: block;
+}
+.body-chart-range {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.body-range-btn {
+  padding: 5px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: 'Noto Sans TC', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.body-range-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.body-no-data {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.body-no-data i { font-size: 28px; display: block; margin-bottom: 8px; color: var(--border); }
+
+/* Delete confirm inline */
+.body-del-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.body-del-box {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 300px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+.body-del-box p {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+}
+.body-del-box .body-form-actions { justify-content: center; }
+
 </style>
 </head>
 <body>
@@ -2046,6 +2261,10 @@ service cloud.firestore {
     <div class="train-wrap" id="trainWrap"></div>
   </div>
 
+  <div class="hidden" id="bodyView">
+    <div class="body-wrap" id="bodyWrap"></div>
+  </div>
+
   <!-- Bottom Tab Bar -->
   <div class="bottom-tabs" id="bottomTabs">
     <button class="bottom-tab active" data-tab="database" id="tabDatabase">
@@ -2055,6 +2274,10 @@ service cloud.firestore {
     <button class="bottom-tab" data-tab="training" id="tabTraining">
       <i class="fas fa-dumbbell"></i>
       <span>訓練紀錄</span>
+    </button>
+    <button class="bottom-tab" data-tab="body" id="tabBody">
+      <i class="fas fa-heartbeat"></i>
+      <span>體能</span>
     </button>
   </div>
 </div>
@@ -3758,18 +3981,21 @@ function startApp(tryFirebase) {
                 state.techniques.forEach(function(t2) { saveTechToFirestore(t2); });
                 saveLocal();
                 listenFirestore();
+                listenBodyMetrics();
                 setSyncBadge(navigator.onLine ? 'cloud' : 'no-network');
                 showApp();
                 showToast('已從雲端恢復 ' + state.techniques.length + ' 個套路');
               } else {
                 syncToFirestore();
                 listenFirestore();
+                listenBodyMetrics();
                 setSyncBadge(navigator.onLine ? 'cloud' : 'no-network');
                 showApp();
               }
             }).catch(function() {
               syncToFirestore();
               listenFirestore();
+              listenBodyMetrics();
               setSyncBadge(navigator.onLine ? 'cloud' : 'no-network');
               showApp();
             });
@@ -3778,6 +4004,7 @@ function startApp(tryFirebase) {
           syncToFirestore();
           state.techniques.forEach(function(t) { saveTechToFirestore(t); });
           listenFirestore();
+          listenBodyMetrics();
           setSyncBadge(navigator.onLine ? 'cloud' : 'no-network');
           showApp();
         }
@@ -3794,6 +4021,7 @@ function startApp(tryFirebase) {
 function showApp() {
   document.getElementById('loadingScreen').classList.add('hidden');
   document.getElementById('appRoot').classList.remove('hidden');
+  loadBodyLocal();
   renderTabs();
   renderList();
   updateTrainBadge();
@@ -3940,8 +4168,13 @@ function switchTab(tab) {
   });
 
   var trainView = document.getElementById('trainView');
-  if (isDb) { trainView.classList.add('hidden'); }
-  else { trainView.classList.remove('hidden'); renderTraining(); }
+  var bodyView = document.getElementById('bodyView');
+
+  trainView.classList.add('hidden');
+  bodyView.classList.add('hidden');
+
+  if (tab === 'training') { trainView.classList.remove('hidden'); renderTraining(); }
+  if (tab === 'body') { bodyView.classList.remove('hidden'); renderBodyMetrics(); }
 
   document.querySelectorAll('.bottom-tab').forEach(function(b) {
     b.classList.toggle('active', b.getAttribute('data-tab') === tab);
@@ -3950,6 +4183,7 @@ function switchTab(tab) {
 
 document.getElementById('tabDatabase').addEventListener('click', function() { switchTab('database'); });
 document.getElementById('tabTraining').addEventListener('click', function() { switchTab('training'); });
+document.getElementById('tabBody').addEventListener('click', function() { switchTab('body'); });
 
 /* --- Training date helpers --- */
 function todayStr() {
@@ -4397,6 +4631,431 @@ function renderStats() {
   });
   document.getElementById('weekNext').addEventListener('click', function() {
     if (statsWeekOffset < 0) { statsWeekOffset++; renderStats(); }
+  });
+}
+
+/* ============================================================
+   BODY METRICS (體能)
+   ============================================================ */
+var bodyMetrics = []; /* Array of { id, date, weight, fatKg, fatPct, visceral, muscle, inbody } */
+var unsubBodyMetrics = null;
+var bodyChartRange = '3m'; /* '1m','3m','6m','1y','all' */
+
+var BODY_FIELDS = [
+  { key: 'weight',   label: '體重',       unit: 'kg',  icon: 'fa-weight-hanging', color: '#3498db' },
+  { key: 'fatPct',   label: '體脂率',     unit: '%',   icon: 'fa-percentage',     color: '#e74c3c' },
+  { key: 'fatKg',    label: '體脂肪量',   unit: 'kg',  icon: 'fa-fire',           color: '#e67e22' },
+  { key: 'visceral', label: '內臟脂肪',   unit: '',    icon: 'fa-lungs',          color: '#9b59b6' },
+  { key: 'muscle',   label: '肌肉量',     unit: 'kg',  icon: 'fa-dumbbell',       color: '#2ecc71' },
+  { key: 'inbody',   label: 'InBody 分數', unit: '分', icon: 'fa-star',           color: '#f39c12' }
+];
+
+function saveBodyLocal() {
+  if (!_ls) return;
+  try { _ls.setItem('wlmj_body', JSON.stringify(bodyMetrics)); } catch (e) {}
+}
+function loadBodyLocal() {
+  if (!_ls) return;
+  try {
+    var raw = _ls.getItem('wlmj_body');
+    if (raw) bodyMetrics = JSON.parse(raw);
+  } catch (e) {}
+}
+
+function saveBodyToFirestore(entry) {
+  if (!state.useFirebase || !db || !state.uid) return;
+  db.doc(fbDocPath('bodyMetrics/' + entry.id)).set(entry).catch(function() {});
+  autoSyncFlash();
+}
+function deleteBodyFromFirestore(id) {
+  if (!state.useFirebase || !db || !state.uid) return;
+  db.doc(fbDocPath('bodyMetrics/' + id)).delete().catch(function() {});
+  autoSyncFlash();
+}
+function listenBodyMetrics() {
+  if (!state.useFirebase || !db || !state.uid) return;
+  unsubBodyMetrics = db.collection(fbDocPath('bodyMetrics')).onSnapshot(function(snap) {
+    var items = [];
+    snap.forEach(function(doc) { items.push(doc.data()); });
+    bodyMetrics = items;
+    bodyMetrics.sort(function(a, b) { return b.date.localeCompare(a.date); });
+    saveBodyLocal();
+    if (currentTab === 'body') renderBodyMetrics();
+  });
+}
+
+function nextBodyId() {
+  var max = 0;
+  bodyMetrics.forEach(function(e) { if (e.id > max) max = e.id; });
+  return max + 1;
+}
+
+function renderBodyMetrics() {
+  var wrap = document.getElementById('bodyWrap');
+  if (!wrap) return;
+
+  var html = '';
+
+  /* ── Input form ── */
+  html += '<div class="body-section-title"><i class="fas fa-edit"></i> 記錄體能數據</div>';
+  html += '<div class="body-form">';
+  html += '<div class="body-form-row">' +
+    '<div class="body-form-label">日期</div>' +
+    '<input type="date" class="body-form-input" id="bodyDate" value="' + todayStr() + '" style="font-size:16px;">' +
+  '</div>';
+
+  html += '<div class="body-form-row">' +
+    '<div class="body-form-label">體重</div>' +
+    '<input type="number" step="0.1" class="body-form-input" id="bodyWeight" placeholder="如 65.5">' +
+    '<div class="body-form-unit">kg</div>' +
+  '</div>';
+
+  html += '<div class="body-form-row">' +
+    '<div class="body-form-label">體脂肪量</div>' +
+    '<input type="number" step="0.1" class="body-form-input" id="bodyFatKg" placeholder="如 12.3">' +
+    '<div class="body-form-unit">kg</div>' +
+  '</div>';
+
+  html += '<div class="body-form-row">' +
+    '<div class="body-form-label">體脂率</div>' +
+    '<input type="number" step="0.1" class="body-form-input" id="bodyFatPct" placeholder="如 18.5">' +
+    '<div class="body-form-unit">%</div>' +
+  '</div>';
+
+  html += '<div class="body-form-row">' +
+    '<div class="body-form-label">內臟脂肪</div>' +
+    '<input type="number" step="0.1" class="body-form-input" id="bodyVisceral" placeholder="如 8">' +
+    '<div class="body-form-unit"></div>' +
+  '</div>';
+
+  html += '<div class="body-form-row">' +
+    '<div class="body-form-label">肌肉量</div>' +
+    '<input type="number" step="0.1" class="body-form-input" id="bodyMuscle" placeholder="如 30.2">' +
+    '<div class="body-form-unit">kg</div>' +
+  '</div>';
+
+  html += '<div class="body-form-row">' +
+    '<div class="body-form-label">InBody 分數</div>' +
+    '<input type="number" step="0.1" class="body-form-input" id="bodyInbody" placeholder="如 75">' +
+    '<div class="body-form-unit">分</div>' +
+  '</div>';
+
+  html += '<div class="body-form-actions">' +
+    '<button class="body-btn body-btn-secondary" id="bodyReset">清空</button>' +
+    '<button class="body-btn body-btn-primary" id="bodySave"><i class="fas fa-check"></i> 儲存</button>' +
+  '</div>';
+  html += '</div>';
+
+  /* ── Charts ── */
+  html += '<div class="body-section-title" style="margin-top:24px;"><i class="fas fa-chart-line"></i> 趨勢圖表</div>';
+
+  /* Range selector */
+  html += '<div class="body-chart-range">';
+  ['1m', '3m', '6m', '1y', 'all'].forEach(function(r) {
+    var labels = { '1m': '1個月', '3m': '3個月', '6m': '半年', '1y': '1年', 'all': '全部' };
+    html += '<button class="body-range-btn' + (bodyChartRange === r ? ' active' : '') + '" data-range="' + r + '">' + labels[r] + '</button>';
+  });
+  html += '</div>';
+
+  /* One chart per field */
+  var sorted = bodyMetrics.slice().sort(function(a, b) { return a.date.localeCompare(b.date); });
+  var filtered = filterByRange(sorted, bodyChartRange);
+
+  BODY_FIELDS.forEach(function(f) {
+    var hasData = filtered.some(function(e) { return e[f.key] != null && e[f.key] !== ''; });
+    html += '<div class="body-chart-container">' +
+      '<div class="body-chart-title"><span class="body-chart-dot" style="background:' + f.color + '"></span>' + f.label;
+    if (hasData && filtered.length > 0) {
+      var latest = null;
+      for (var li = filtered.length - 1; li >= 0; li--) {
+        if (filtered[li][f.key] != null && filtered[li][f.key] !== '') { latest = filtered[li]; break; }
+      }
+      if (latest) html += '<span style="margin-left:auto;font-size:11px;color:var(--text-muted);">最新 <strong style="color:' + f.color + '">' + latest[f.key] + '</strong> ' + f.unit + '</span>';
+    }
+    html += '</div>';
+    if (hasData) {
+      html += '<canvas class="body-chart-canvas" id="chart_' + f.key + '"></canvas>';
+    } else {
+      html += '<div class="body-no-data"><i class="fas fa-chart-line"></i>暫無數據</div>';
+    }
+    html += '</div>';
+  });
+
+  /* ── History ── */
+  html += '<div class="body-section-title" style="margin-top:24px;"><i class="fas fa-history"></i> 歷史記錄</div>';
+
+  if (bodyMetrics.length === 0) {
+    html += '<div class="body-no-data"><i class="fas fa-clipboard"></i>尚未有記錄<br>請在上方輸入你的體能數據</div>';
+  } else {
+    html += '<div class="body-history-list">';
+    bodyMetrics.forEach(function(entry) {
+      html += '<div class="body-history-item" data-id="' + entry.id + '">' +
+        '<button class="body-history-del" data-del-id="' + entry.id + '"><i class="fas fa-trash-alt"></i></button>' +
+        '<div class="body-history-date">' + dateToDisplay(entry.date) + '</div>' +
+        '<div class="body-history-metrics">';
+      BODY_FIELDS.forEach(function(f) {
+        if (entry[f.key] != null && entry[f.key] !== '') {
+          html += '<div class="body-history-metric">' + f.label + ': <span>' + entry[f.key] + '</span> ' + f.unit + '</div>';
+        }
+      });
+      html += '</div></div>';
+    });
+    html += '</div>';
+  }
+
+  wrap.innerHTML = html;
+
+  /* ── Draw line charts ── */
+  BODY_FIELDS.forEach(function(f) {
+    var canvas = document.getElementById('chart_' + f.key);
+    if (canvas) drawLineChart(canvas, filtered, f.key, f.color, f.unit);
+  });
+
+  /* ── Event bindings ── */
+  document.getElementById('bodySave').addEventListener('click', function() { saveBodyEntry(); });
+  document.getElementById('bodyReset').addEventListener('click', function() { resetBodyForm(); });
+
+  /* Range buttons */
+  wrap.querySelectorAll('.body-range-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      bodyChartRange = this.getAttribute('data-range');
+      renderBodyMetrics();
+    });
+  });
+
+  /* Delete buttons */
+  wrap.querySelectorAll('.body-history-del').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var delId = parseInt(this.getAttribute('data-del-id'));
+      showBodyDeleteConfirm(delId);
+    });
+  });
+
+  /* Click history item to edit */
+  wrap.querySelectorAll('.body-history-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      var id = parseInt(this.getAttribute('data-id'));
+      loadBodyEntryToForm(id);
+      wrap.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+function filterByRange(sorted, range) {
+  if (range === 'all' || sorted.length === 0) return sorted;
+  var now = new Date();
+  var cutoff = new Date();
+  if (range === '1m') cutoff.setMonth(now.getMonth() - 1);
+  else if (range === '3m') cutoff.setMonth(now.getMonth() - 3);
+  else if (range === '6m') cutoff.setMonth(now.getMonth() - 6);
+  else if (range === '1y') cutoff.setFullYear(now.getFullYear() - 1);
+  var cutStr = cutoff.getFullYear() + '-' + String(cutoff.getMonth() + 1).padStart(2, '0') + '-' + String(cutoff.getDate()).padStart(2, '0');
+  return sorted.filter(function(e) { return e.date >= cutStr; });
+}
+
+function saveBodyEntry() {
+  var dateVal = document.getElementById('bodyDate').value;
+  if (!dateVal) { showToast('請選擇日期'); return; }
+
+  var entry = {
+    date: dateVal,
+    weight:   parseFloat(document.getElementById('bodyWeight').value) || null,
+    fatKg:    parseFloat(document.getElementById('bodyFatKg').value) || null,
+    fatPct:   parseFloat(document.getElementById('bodyFatPct').value) || null,
+    visceral: parseFloat(document.getElementById('bodyVisceral').value) || null,
+    muscle:   parseFloat(document.getElementById('bodyMuscle').value) || null,
+    inbody:   parseFloat(document.getElementById('bodyInbody').value) || null
+  };
+
+  /* Check at least one field filled */
+  var hasAny = BODY_FIELDS.some(function(f) { return entry[f.key] != null; });
+  if (!hasAny) { showToast('請至少填寫一個數值'); return; }
+
+  /* Check if editing existing entry (same date) */
+  var existing = null;
+  bodyMetrics.forEach(function(e) { if (e.date === dateVal) existing = e; });
+  if (existing) {
+    entry.id = existing.id;
+    var idx = bodyMetrics.indexOf(existing);
+    bodyMetrics[idx] = entry;
+  } else {
+    entry.id = nextBodyId();
+    bodyMetrics.push(entry);
+  }
+
+  bodyMetrics.sort(function(a, b) { return b.date.localeCompare(a.date); });
+  saveBodyLocal();
+  saveBodyToFirestore(entry);
+  showToast(existing ? '已更新記錄' : '已儲存記錄');
+  renderBodyMetrics();
+}
+
+function resetBodyForm() {
+  document.getElementById('bodyDate').value = todayStr();
+  ['bodyWeight', 'bodyFatKg', 'bodyFatPct', 'bodyVisceral', 'bodyMuscle', 'bodyInbody'].forEach(function(id) {
+    document.getElementById(id).value = '';
+  });
+}
+
+function loadBodyEntryToForm(id) {
+  var entry = null;
+  bodyMetrics.forEach(function(e) { if (e.id === id) entry = e; });
+  if (!entry) return;
+  document.getElementById('bodyDate').value = entry.date;
+  document.getElementById('bodyWeight').value = entry.weight != null ? entry.weight : '';
+  document.getElementById('bodyFatKg').value = entry.fatKg != null ? entry.fatKg : '';
+  document.getElementById('bodyFatPct').value = entry.fatPct != null ? entry.fatPct : '';
+  document.getElementById('bodyVisceral').value = entry.visceral != null ? entry.visceral : '';
+  document.getElementById('bodyMuscle').value = entry.muscle != null ? entry.muscle : '';
+  document.getElementById('bodyInbody').value = entry.inbody != null ? entry.inbody : '';
+}
+
+function showBodyDeleteConfirm(id) {
+  var entry = null;
+  bodyMetrics.forEach(function(e) { if (e.id === id) entry = e; });
+  if (!entry) return;
+  var overlay = document.createElement('div');
+  overlay.className = 'body-del-confirm';
+  overlay.innerHTML = '<div class="body-del-box">' +
+    '<p>確定刪除 ' + dateToDisplay(entry.date) + ' 的記錄？</p>' +
+    '<div class="body-form-actions">' +
+      '<button class="body-btn body-btn-secondary" id="bodyDelCancel">取消</button>' +
+      '<button class="body-btn body-btn-primary" style="background:var(--danger);" id="bodyDelOk">刪除</button>' +
+    '</div>' +
+  '</div>';
+  document.body.appendChild(overlay);
+  overlay.querySelector('#bodyDelCancel').addEventListener('click', function() { overlay.remove(); });
+  overlay.querySelector('#bodyDelOk').addEventListener('click', function() {
+    bodyMetrics = bodyMetrics.filter(function(e) { return e.id !== id; });
+    saveBodyLocal();
+    deleteBodyFromFirestore(id);
+    overlay.remove();
+    showToast('已刪除記錄');
+    renderBodyMetrics();
+  });
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+}
+
+/* ── Line Chart Drawing ── */
+function drawLineChart(canvas, data, key, color, unit) {
+  var points = [];
+  data.forEach(function(e) {
+    if (e[key] != null && e[key] !== '') {
+      points.push({ date: e.date, value: parseFloat(e[key]) });
+    }
+  });
+  if (points.length === 0) return;
+
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  var W = rect.width * dpr;
+  var H = rect.height * dpr;
+  canvas.width = W;
+  canvas.height = H;
+
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  var w = rect.width;
+  var h = rect.height;
+
+  var padL = 46, padR = 14, padT = 16, padB = 28;
+  var chartW = w - padL - padR;
+  var chartH = h - padT - padB;
+
+  var vals = points.map(function(p) { return p.value; });
+  var minV = Math.min.apply(null, vals);
+  var maxV = Math.max.apply(null, vals);
+  if (minV === maxV) { minV -= 1; maxV += 1; }
+  var rangeV = maxV - minV;
+  var padding = rangeV * 0.1;
+  minV -= padding;
+  maxV += padding;
+  rangeV = maxV - minV;
+
+  function xPos(i) { return padL + (points.length === 1 ? chartW / 2 : (i / (points.length - 1)) * chartW); }
+  function yPos(v) { return padT + chartH - ((v - minV) / rangeV) * chartH; }
+
+  /* Compute nice grid lines */
+  var gridLines = [];
+  var steps = 4;
+  var step = rangeV / steps;
+  for (var gi = 0; gi <= steps; gi++) {
+    var gv = minV + gi * step;
+    gridLines.push(gv);
+  }
+
+  /* Draw grid */
+  var isDark = document.documentElement.classList.contains('dark');
+  var gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+  var textColor = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)';
+
+  ctx.font = '10px "Noto Sans TC", sans-serif';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  gridLines.forEach(function(gv) {
+    var gy = yPos(gv);
+    ctx.strokeStyle = gridColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padL, gy);
+    ctx.lineTo(w - padR, gy);
+    ctx.stroke();
+    ctx.fillStyle = textColor;
+    ctx.fillText(gv.toFixed(1), padL - 6, gy);
+  });
+
+  /* Draw area fill */
+  if (points.length > 1) {
+    ctx.beginPath();
+    ctx.moveTo(xPos(0), yPos(points[0].value));
+    for (var ai = 1; ai < points.length; ai++) {
+      ctx.lineTo(xPos(ai), yPos(points[ai].value));
+    }
+    ctx.lineTo(xPos(points.length - 1), padT + chartH);
+    ctx.lineTo(xPos(0), padT + chartH);
+    ctx.closePath();
+    var grad = ctx.createLinearGradient(0, padT, 0, padT + chartH);
+    grad.addColorStop(0, color + '30');
+    grad.addColorStop(1, color + '05');
+    ctx.fillStyle = grad;
+    ctx.fill();
+  }
+
+  /* Draw line */
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  points.forEach(function(p, i) {
+    if (i === 0) ctx.moveTo(xPos(i), yPos(p.value));
+    else ctx.lineTo(xPos(i), yPos(p.value));
+  });
+  ctx.stroke();
+
+  /* Draw dots */
+  points.forEach(function(p, i) {
+    ctx.beginPath();
+    ctx.arc(xPos(i), yPos(p.value), 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.strokeStyle = isDark ? '#1a1a2e' : '#fff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  });
+
+  /* X-axis date labels */
+  ctx.fillStyle = textColor;
+  ctx.font = '9px "Noto Sans TC", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  var maxLabels = Math.min(points.length, 6);
+  var labelStep = points.length <= maxLabels ? 1 : Math.ceil(points.length / maxLabels);
+  points.forEach(function(p, i) {
+    if (i % labelStep !== 0 && i !== points.length - 1) return;
+    var d = p.date.slice(5); /* MM-DD */
+    ctx.fillText(d, xPos(i), padT + chartH + 6);
   });
 }
 
