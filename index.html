@@ -2520,6 +2520,29 @@ html.dark .train-check-item.checked {
   border: 1px solid var(--border-light);
   margin-bottom: 8px;
   position: relative;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.15s;
+}
+.kyu-history-card:active {
+  transform: scale(0.98);
+}
+.kyu-history-card:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.dark .kyu-history-card:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.kyu-autosave-indicator {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.kyu-autosave-indicator.show {
+  opacity: 1;
 }
 .kyu-history-top {
   display: flex;
@@ -5740,7 +5763,7 @@ function listenKyudo() {
     kyuScores = items;
     kyuScores.sort(function(a, b) { return b.date.localeCompare(a.date) || b.id - a.id; });
     saveKyuLocal();
-    if (currentTab === 'kyudo') renderKyudo();
+    if (currentTab === 'kyudo' && !kyuActiveSession) renderKyudo();
   });
 }
 
@@ -5842,10 +5865,10 @@ function renderKyuScoringTab() {
       var scGolds = sc.goldsCount != null ? sc.goldsCount : kyuCountGolds(sc.arrows || []);
       var avg = sc.totalArrows > 0 ? (sc.totalScore / sc.totalArrows).toFixed(1) : '0.0';
 
-      html += '<div class="kyu-history-card">' +
+      html += '<div class="kyu-history-card" data-sc-edit="' + sc.id + '">' +
         '<button class="kyu-history-del" data-scdel-id="' + sc.id + '"><i class="fas fa-trash-alt"></i></button>' +
         '<div class="kyu-history-top">' +
-          '<div class="kyu-history-date">' + dateToDisplay(sc.date) + '</div>' +
+          '<div class="kyu-history-date">' + dateToDisplay(sc.date) + ' <i class="fas fa-pen" style="font-size:9px;color:var(--text-muted);margin-left:4px;opacity:0.6;"></i></div>' +
           '<div class="kyu-history-score">' + sc.totalScore + '分 <span style="font-size:12px;color:var(--text-muted);font-weight:400;">(' + pct + '%) avg ' + avg + '</span></div>' +
         '</div>' +
         '<div class="kyu-history-meta">' +
@@ -5925,6 +5948,30 @@ function bindKyuScoringEvents(wrap) {
       });
     });
   });
+
+  /* Click history card to edit */
+  wrap.querySelectorAll('[data-sc-edit]').forEach(function(card) {
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('.kyu-history-del')) return;
+      var id = parseInt(this.getAttribute('data-sc-edit'));
+      var sc = kyuScores.find(function(s) { return s.id === id; });
+      if (!sc) return;
+      /* Build a virtual template from the saved score data */
+      var tpl = kyuTemplates.find(function(t) { return t.id === sc.templateId; });
+      if (!tpl) {
+        tpl = {
+          id: sc.templateId,
+          name: sc.templateName || '(已刪除模板)',
+          scoreValues: sc.scoreValues || DEFAULT_SCORE_VALUES,
+          distance: sc.distance || '',
+          drawWeight: sc.drawWeight || '',
+          arrowsPerEnd: sc.arrowsPerEnd || 6,
+          ends: sc.ends || 6
+        };
+      }
+      startKyuSession(tpl, sc);
+    });
+  });
 }
 
 /* ── Template form modal ── */
@@ -5998,15 +6045,112 @@ function openKyuTplForm(existing) {
 }
 
 /* ── Start scoring session ── */
-function startKyuSession(tpl) {
-  var totalArrows = (tpl.arrowsPerEnd || 6) * (tpl.ends || 6);
+function startKyuSession(tpl, existingScore) {
+  var arrowsPerEnd = tpl.arrowsPerEnd || 6;
+  var ends = tpl.ends || 6;
+  var totalArrows = arrowsPerEnd * ends;
+  var arrows;
+  var activeEnd = 0;
+
+  if (existingScore) {
+    /* Load arrows from existing record */
+    arrows = (existingScore.arrows || []).slice();
+    /* Pad to full length */
+    while (arrows.length < totalArrows) arrows.push(null);
+    /* Truncate if template changed to fewer arrows */
+    arrows = arrows.slice(0, totalArrows);
+    /* Find first non-full end as the active end */
+    for (var e = 0; e < ends; e++) {
+      var sIdx = e * arrowsPerEnd;
+      var hasNull = false;
+      for (var a = 0; a < arrowsPerEnd; a++) {
+        if (arrows[sIdx + a] === null) { hasNull = true; break; }
+      }
+      if (hasNull) { activeEnd = e; break; }
+      if (e === ends - 1) activeEnd = e;
+    }
+  } else {
+    arrows = new Array(totalArrows).fill(null);
+  }
+
   kyuActiveSession = {
     tpl: tpl,
-    arrows: new Array(totalArrows).fill(null),
-    activeEnd: 0,
-    date: todayStr()
+    arrows: arrows,
+    activeEnd: activeEnd,
+    date: existingScore ? existingScore.date : todayStr(),
+    editingScoreId: existingScore ? existingScore.id : null
   };
   renderKyudo();
+}
+
+/* ── Auto-save helper ── */
+var _kyuSaveTimer = null;
+function kyuAutoSave() {
+  var sess = kyuActiveSession;
+  if (!sess) return;
+  var tpl = sess.tpl;
+  var scoreValues = kyuGetScoreValues(tpl);
+  var arrowsPerEnd = tpl.arrowsPerEnd || 6;
+
+  var filledArr = sess.arrows.filter(function(a) { return a !== null; });
+  if (filledArr.length === 0) {
+    /* No arrows — if editing, delete the record */
+    if (sess.editingScoreId) {
+      kyuScores = kyuScores.filter(function(s) { return s.id !== sess.editingScoreId; });
+      saveKyuLocal();
+      deleteKyuScoreFromFirestore(sess.editingScoreId);
+      sess.editingScoreId = null;
+    }
+    return;
+  }
+
+  /* Build arrows: trim trailing nulls, convert mid-nulls to M */
+  var arrows = sess.arrows.slice();
+  while (arrows.length > 0 && arrows[arrows.length - 1] === null) arrows.pop();
+  arrows = arrows.map(function(a) { return a === null ? 'M' : a; });
+
+  var maxPa = kyuMaxPerArrow(scoreValues);
+  var scoreObj = {
+    id: sess.editingScoreId || nextKyuScoreId(),
+    date: sess.date,
+    templateId: tpl.id,
+    templateName: tpl.name,
+    scoreValues: scoreValues,
+    distance: tpl.distance,
+    drawWeight: tpl.drawWeight,
+    arrowsPerEnd: arrowsPerEnd,
+    ends: tpl.ends || 6,
+    arrows: arrows,
+    totalScore: arrows.reduce(function(s, a) { return s + kyuScoreToNum(a); }, 0),
+    hitCount: arrows.filter(function(a) { return kyuScoreToNum(a) > 0; }).length,
+    goldsCount: kyuCountGolds(arrows),
+    maxPerArrow: maxPa,
+    totalArrows: arrows.length
+  };
+
+  if (sess.editingScoreId) {
+    var idx = kyuScores.findIndex(function(s) { return s.id === sess.editingScoreId; });
+    if (idx >= 0) kyuScores[idx] = scoreObj;
+    else kyuScores.push(scoreObj);
+  } else {
+    sess.editingScoreId = scoreObj.id;
+    kyuScores.push(scoreObj);
+  }
+  kyuScores.sort(function(a, b) { return b.date.localeCompare(a.date) || b.id - a.id; });
+  saveKyuLocal();
+
+  /* Debounced Firestore write */
+  clearTimeout(_kyuSaveTimer);
+  _kyuSaveTimer = setTimeout(function() {
+    saveKyuScoreToFirestore(scoreObj);
+  }, 800);
+
+  /* Flash autosave indicator */
+  var indicator = document.getElementById('kyuAutosaveInd');
+  if (indicator) {
+    indicator.classList.add('show');
+    setTimeout(function() { indicator.classList.remove('show'); }, 1200);
+  }
 }
 
 /* ── Render active scoring session ── */
@@ -6032,7 +6176,7 @@ function renderKyuScoring(wrap) {
   /* Top bar */
   html += '<div class="kyu-scoring-topbar">' +
     '<button class="kyu-scoring-topbar-btn" id="kyuCloseSession"><i class="fas fa-times-circle"></i></button>' +
-    '<div class="kyu-scoring-topbar-title">' + esc(tpl.name) + '</div>' +
+    '<div class="kyu-scoring-topbar-title">' + esc(tpl.name) + (sess.editingScoreId ? ' <span style="font-size:11px;opacity:0.7;font-weight:400;"><i class="fas fa-pen"></i> 編輯中</span>' : '') + '</div>' +
     '<div class="kyu-scoring-topbar-right">' +
       '<input type="date" id="kyuScoreDate" value="' + sess.date + '">' +
     '</div>' +
@@ -6100,7 +6244,8 @@ function renderKyuScoring(wrap) {
   /* Summary bar */
   html += '<div class="kyu-scoring-summary">' +
     '<div class="kyu-scoring-avg">Average: <strong>' + avg + '</strong></div>' +
-    '<button class="kyu-scoring-save-btn" id="kyuSaveScore"><i class="fas fa-check"></i> 儲存</button>' +
+    '<div class="kyu-autosave-indicator" id="kyuAutosaveInd"><i class="fas fa-cloud-upload-alt"></i> 已儲存</div>' +
+    '<button class="kyu-scoring-save-btn" id="kyuDoneBtn" style="background:var(--accent);"><i class="fas fa-check"></i> 完成</button>' +
     '<div class="kyu-scoring-total">Total: ' + totalScore + '</div>' +
   '</div>';
 
@@ -6127,14 +6272,21 @@ function renderKyuScoring(wrap) {
 
   /* --- Bind events --- */
   document.getElementById('kyuCloseSession').addEventListener('click', function() {
-    showKyuConfirm('確定離開？未儲存的記錄將會遺失。', function() {
-      kyuActiveSession = null;
-      renderKyudo();
-    });
+    /* Auto-saved, just flush any pending Firestore write and close */
+    clearTimeout(_kyuSaveTimer);
+    var filledArr = sess.arrows.filter(function(a) { return a !== null; });
+    if (filledArr.length > 0 && sess.editingScoreId) {
+      /* Force immediate Firestore save before closing */
+      var sc = kyuScores.find(function(s) { return s.id === sess.editingScoreId; });
+      if (sc) saveKyuScoreToFirestore(sc);
+    }
+    kyuActiveSession = null;
+    renderKyudo();
   });
 
   document.getElementById('kyuScoreDate').addEventListener('change', function() {
     sess.date = this.value;
+    kyuAutoSave();
   });
 
   /* Tap end header to switch active end */
@@ -6168,6 +6320,7 @@ function renderKyuScoring(wrap) {
         if (full && ae < ends - 1) {
           sess.activeEnd = ae + 1;
         }
+        kyuAutoSave();
       }
       renderKyuScoring(wrap);
     });
@@ -6180,6 +6333,7 @@ function renderKyuScoring(wrap) {
     for (var si = arrowsPerEnd - 1; si >= 0; si--) {
       if (sess.arrows[sIdx + si] !== null) {
         sess.arrows[sIdx + si] = null;
+        kyuAutoSave();
         break;
       }
     }
@@ -6194,39 +6348,14 @@ function renderKyuScoring(wrap) {
     }
   });
 
-  /* Save */
-  document.getElementById('kyuSaveScore').addEventListener('click', function() {
+  /* Done — flush pending save and close */
+  document.getElementById('kyuDoneBtn').addEventListener('click', function() {
+    clearTimeout(_kyuSaveTimer);
     var filledArr = sess.arrows.filter(function(a) { return a !== null; });
-    if (filledArr.length === 0) { showToast('請至少記錄一箭'); return; }
-
-    /* Clean null arrows from the end, keep filled */
-    var arrows = sess.arrows.slice();
-    while (arrows.length > 0 && arrows[arrows.length - 1] === null) arrows.pop();
-    arrows = arrows.map(function(a) { return a === null ? 'M' : a; });
-
-    var maxPa = kyuMaxPerArrow(scoreValues);
-    var score = {
-      id: nextKyuScoreId(),
-      date: sess.date,
-      templateId: tpl.id,
-      templateName: tpl.name,
-      scoreValues: scoreValues,
-      distance: tpl.distance,
-      drawWeight: tpl.drawWeight,
-      arrowsPerEnd: arrowsPerEnd,
-      ends: tpl.ends || 6,
-      arrows: arrows,
-      totalScore: arrows.reduce(function(s, a) { return s + kyuScoreToNum(a); }, 0),
-      hitCount: arrows.filter(function(a) { return kyuScoreToNum(a) > 0; }).length,
-      goldsCount: kyuCountGolds(arrows),
-      maxPerArrow: maxPa,
-      totalArrows: arrows.length
-    };
-
-    kyuScores.push(score);
-    kyuScores.sort(function(a, b) { return b.date.localeCompare(a.date) || b.id - a.id; });
-    saveKyuLocal();
-    saveKyuScoreToFirestore(score);
+    if (filledArr.length > 0 && sess.editingScoreId) {
+      var sc = kyuScores.find(function(s) { return s.id === sess.editingScoreId; });
+      if (sc) saveKyuScoreToFirestore(sc);
+    }
     kyuActiveSession = null;
     showToast('已儲存記錄');
     renderKyudo();
