@@ -6154,7 +6154,7 @@ function kyuAutoSave() {
 }
 
 /* ── Render active scoring session ── */
-function renderKyuScoring(wrap) {
+function renderKyuScoring(wrap, preserveScroll) {
   var sess = kyuActiveSession;
   var tpl = sess.tpl;
   var scoreValues = kyuGetScoreValues(tpl);
@@ -6268,7 +6268,20 @@ function renderKyuScoring(wrap) {
 
   html += '</div>'; /* end scoring-view */
 
+  /* Save scroll position before replacing DOM */
+  var savedScroll = 0;
+  if (preserveScroll) {
+    var oldBody = wrap.querySelector('.kyu-scoring-body');
+    if (oldBody) savedScroll = oldBody.scrollTop;
+  }
+
   wrap.innerHTML = html;
+
+  /* Restore scroll position */
+  if (preserveScroll) {
+    var newBody = wrap.querySelector('.kyu-scoring-body');
+    if (newBody) newBody.scrollTop = savedScroll;
+  }
 
   /* --- Bind events --- */
   document.getElementById('kyuCloseSession').addEventListener('click', function() {
@@ -6322,22 +6335,37 @@ function renderKyuScoring(wrap) {
         }
         kyuAutoSave();
       }
-      renderKyuScoring(wrap);
+      renderKyuScoring(wrap, true);
     });
   });
 
   /* Backspace */
   document.getElementById('kyuKeyBack').addEventListener('click', function() {
-    var sIdx = ae * arrowsPerEnd;
+    var curEnd = ae;
+    var sIdx = curEnd * arrowsPerEnd;
     /* Find last filled slot in active end */
+    var deleted = false;
     for (var si = arrowsPerEnd - 1; si >= 0; si--) {
       if (sess.arrows[sIdx + si] !== null) {
         sess.arrows[sIdx + si] = null;
-        kyuAutoSave();
+        deleted = true;
         break;
       }
     }
-    renderKyuScoring(wrap);
+    /* If current end was empty, go back to previous end and delete there */
+    if (!deleted && curEnd > 0) {
+      sess.activeEnd = curEnd - 1;
+      var prevIdx = sess.activeEnd * arrowsPerEnd;
+      for (var pi = arrowsPerEnd - 1; pi >= 0; pi--) {
+        if (sess.arrows[prevIdx + pi] !== null) {
+          sess.arrows[prevIdx + pi] = null;
+          deleted = true;
+          break;
+        }
+      }
+    }
+    if (deleted) kyuAutoSave();
+    renderKyuScoring(wrap, true);
   });
 
   /* Next End */
@@ -6361,10 +6389,12 @@ function renderKyuScoring(wrap) {
     renderKyudo();
   });
 
-  /* Scroll active end into view */
-  var activeEndEl = wrap.querySelector('[data-end-tap="' + ae + '"]');
-  if (activeEndEl) {
-    setTimeout(function() { activeEndEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+  /* Scroll active end into view only on initial render / end change */
+  if (!preserveScroll) {
+    var activeEndEl = wrap.querySelector('[data-end-tap="' + ae + '"]');
+    if (activeEndEl) {
+      setTimeout(function() { activeEndEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+    }
   }
 }
 
