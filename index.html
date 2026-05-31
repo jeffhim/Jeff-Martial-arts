@@ -2398,11 +2398,23 @@ html.dark .train-check-item.checked {
   border-bottom: 1px solid var(--border-light);
   min-height: 46px;
   transition: background 0.1s;
+  cursor: pointer;
+}
+.kyu-arrow-row:active {
+  background: rgba(196,161,95,0.06);
 }
 .kyu-arrow-row.current {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
   background: rgba(196,161,95,0.08);
+}
+.kyu-arrow-row.selected {
+  outline: 2px solid var(--danger);
+  outline-offset: -2px;
+  background: rgba(220,53,69,0.08);
+}
+.dark .kyu-arrow-row.selected {
+  background: rgba(220,53,69,0.15);
 }
 .kyu-arrow-num {
   font-size: 13px;
@@ -2549,6 +2561,7 @@ html.dark .train-check-item.checked {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 6px;
+  padding-right: 32px;
 }
 .kyu-history-date {
   font-size: 12px;
@@ -2597,6 +2610,129 @@ html.dark .train-check-item.checked {
   border-radius: 6px;
 }
 .kyu-history-del:hover { color: var(--danger); }
+
+/* Notes (心得) */
+.kyu-notes-wrap { padding-bottom: 20px; }
+.kyu-heading-card {
+  background: var(--bg-card);
+  border-radius: 14px;
+  border: 1px solid var(--border-light);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.kyu-heading-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  cursor: pointer;
+  gap: 8px;
+  user-select: none;
+}
+.kyu-heading-bar:active { opacity: 0.8; }
+.kyu-heading-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.kyu-heading-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.kyu-heading-action-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+.kyu-heading-action-btn:hover { color: var(--accent); }
+.kyu-heading-action-btn.danger:hover { color: var(--danger); }
+.kyu-note-list {
+  padding: 0 14px 12px;
+}
+.kyu-note-bubble {
+  background: var(--bg-body);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  position: relative;
+  word-break: break-word;
+}
+.kyu-note-bubble:last-child { margin-bottom: 0; }
+.kyu-note-bubble-actions {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.kyu-note-bubble:hover .kyu-note-bubble-actions,
+.kyu-note-bubble:active .kyu-note-bubble-actions { opacity: 1; }
+@media (hover: none) {
+  .kyu-note-bubble-actions { opacity: 1; }
+}
+.kyu-note-bubble-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+.kyu-note-bubble-btn:hover { color: var(--accent); }
+.kyu-note-bubble-btn.danger:hover { color: var(--danger); }
+.kyu-note-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px;
+  border: 1px dashed var(--border-light);
+  border-radius: 10px;
+  background: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+.kyu-note-add-btn:hover { color: var(--accent); border-color: var(--accent); }
+.kyu-add-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 2px dashed var(--border-light);
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.kyu-add-heading:hover { border-color: var(--accent); color: var(--accent); }
+.kyu-note-date {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  text-align: right;
+}
 
 /* Stats */
 .kyu-stat-filter {
@@ -4686,6 +4822,7 @@ document.getElementById('btnFirebaseSettings').addEventListener('click', functio
       if (unsubBodyMetrics) { unsubBodyMetrics(); unsubBodyMetrics = null; }
       if (unsubKyuTemplates) { unsubKyuTemplates(); unsubKyuTemplates = null; }
       if (unsubKyuScores) { unsubKyuScores(); unsubKyuScores = null; }
+      if (unsubKyuNotes) { unsubKyuNotes(); unsubKyuNotes = null; }
       state.useFirebase = false;
       clearConfigLocal();
       document.getElementById('appRoot').classList.add('hidden');
@@ -5640,8 +5777,10 @@ var kyuTemplates = [];
 var kyuScores = [];
 var unsubKyuTemplates = null;
 var unsubKyuScores = null;
-var kyuSubTab = 'scoring'; /* 'scoring' | 'stats' */
-var kyuActiveSession = null; /* { tpl, arrows:[], activeEnd:0, date } */
+var kyuSubTab = 'scoring'; /* 'scoring' | 'stats' | 'notes' */
+var kyuActiveSession = null; /* { tpl, arrows:[], activeEnd:0, date, selectedArrow } */
+var kyuNotes = []; /* [{ id, title, notes:[{ id, text, date }] }] */
+var unsubKyuNotes = null;
 var kyuStatFilter = 'all'; /* template id or 'all' */
 
 /* --- Score utilities --- */
@@ -5716,11 +5855,13 @@ function saveKyuLocal() {
   if (!_ls) return;
   try { _ls.setItem('wlmj_kyu_tpl', JSON.stringify(kyuTemplates)); } catch (e) {}
   try { _ls.setItem('wlmj_kyu_scores', JSON.stringify(kyuScores)); } catch (e) {}
+  try { _ls.setItem('wlmj_kyu_notes', JSON.stringify(kyuNotes)); } catch (e) {}
 }
 function loadKyuLocal() {
   if (!_ls) return;
   try { var r = _ls.getItem('wlmj_kyu_tpl'); if (r) kyuTemplates = JSON.parse(r); } catch (e) {}
   try { var r2 = _ls.getItem('wlmj_kyu_scores'); if (r2) kyuScores = JSON.parse(r2); } catch (e) {}
+  try { var r3 = _ls.getItem('wlmj_kyu_notes'); if (r3) kyuNotes = JSON.parse(r3); } catch (e) {}
 }
 
 /* --- Firestore --- */
@@ -5746,6 +5887,11 @@ function deleteKyuScoreFromFirestore(id) {
   db.doc(fbDocPath('kyuScores/' + id)).delete().catch(function() {});
   autoSyncFlash();
 }
+function saveKyuNotesToFirestore() {
+  if (!state.useFirebase || !db || !state.uid) return;
+  db.doc(fbDocPath('kyuNotes/data')).set({ items: JSON.parse(JSON.stringify(kyuNotes)) }).catch(function() {});
+  autoSyncFlash();
+}
 function listenKyudo() {
   if (!state.useFirebase || !db || !state.uid) return;
   if (unsubKyuTemplates) unsubKyuTemplates();
@@ -5764,6 +5910,15 @@ function listenKyudo() {
     kyuScores.sort(function(a, b) { return b.date.localeCompare(a.date) || b.id - a.id; });
     saveKyuLocal();
     if (currentTab === 'kyudo' && !kyuActiveSession) renderKyudo();
+  });
+  if (unsubKyuNotes) unsubKyuNotes();
+  unsubKyuNotes = db.doc(fbDocPath('kyuNotes/data')).onSnapshot(function(doc) {
+    if (doc.exists) {
+      var d = doc.data();
+      kyuNotes = d.items || [];
+      saveKyuLocal();
+      if (currentTab === 'kyudo' && !kyuActiveSession && kyuSubTab === 'notes') renderKyudo();
+    }
   });
 }
 
@@ -5791,12 +5946,15 @@ function renderKyudo() {
   html += '<div class="kyu-subtabs">' +
     '<button class="kyu-subtab' + (kyuSubTab === 'scoring' ? ' active' : '') + '" data-kst="scoring"><i class="fas fa-bullseye"></i> 計分</button>' +
     '<button class="kyu-subtab' + (kyuSubTab === 'stats' ? ' active' : '') + '" data-kst="stats"><i class="fas fa-chart-line"></i> 統計</button>' +
+    '<button class="kyu-subtab' + (kyuSubTab === 'notes' ? ' active' : '') + '" data-kst="notes"><i class="fas fa-book"></i> 心得</button>' +
   '</div>';
 
   if (kyuSubTab === 'scoring') {
     html += renderKyuScoringTab();
-  } else {
+  } else if (kyuSubTab === 'stats') {
     html += renderKyuStatsTab();
+  } else if (kyuSubTab === 'notes') {
+    html += renderKyuNotesTab();
   }
 
   wrap.innerHTML = html;
@@ -5811,8 +5969,10 @@ function renderKyudo() {
 
   if (kyuSubTab === 'scoring') {
     bindKyuScoringEvents(wrap);
-  } else {
+  } else if (kyuSubTab === 'stats') {
     bindKyuStatsEvents(wrap);
+  } else if (kyuSubTab === 'notes') {
+    bindKyuNotesEvents(wrap);
   }
 }
 
@@ -6078,7 +6238,8 @@ function startKyuSession(tpl, existingScore) {
     arrows: arrows,
     activeEnd: activeEnd,
     date: existingScore ? existingScore.date : todayStr(),
-    editingScoreId: existingScore ? existingScore.id : null
+    editingScoreId: existingScore ? existingScore.id : null,
+    selectedArrow: null
   };
   renderKyudo();
 }
@@ -6225,7 +6386,9 @@ function renderKyuScoring(wrap, preserveScroll) {
     for (var di = 0; di < displayArrows.length; di++) {
       var darr = displayArrows[di];
       var isCurrent = (e === ae && darr.val === null && di === endFilledCount);
-      html += '<div class="kyu-arrow-row' + (isCurrent ? ' current' : '') + '">';
+      var isSelected = (sess.selectedArrow && sess.selectedArrow.endIdx === e && sess.selectedArrow.origIdx === darr.origIdx);
+      var rowClass = 'kyu-arrow-row' + (isSelected ? ' selected' : (isCurrent ? ' current' : ''));
+      html += '<div class="' + rowClass + '"' + (darr.val !== null ? ' data-arrow-end="' + e + '" data-arrow-orig="' + darr.origIdx + '"' : '') + '>';
       html += '<div class="kyu-arrow-num">' + (di + 1) + '.</div>';
       if (darr.val !== null) {
         var col = kyuScoreColor(darr.val);
@@ -6306,7 +6469,23 @@ function renderKyuScoring(wrap, preserveScroll) {
   wrap.querySelectorAll('[data-end-tap]').forEach(function(el) {
     el.addEventListener('click', function() {
       sess.activeEnd = parseInt(this.getAttribute('data-end-tap'));
+      sess.selectedArrow = null;
       renderKyuScoring(wrap);
+    });
+  });
+
+  /* Tap individual arrow to select/deselect */
+  wrap.querySelectorAll('[data-arrow-end]').forEach(function(el) {
+    el.addEventListener('click', function() {
+      var endIdx = parseInt(this.getAttribute('data-arrow-end'));
+      var origIdx = parseInt(this.getAttribute('data-arrow-orig'));
+      /* Toggle selection */
+      if (sess.selectedArrow && sess.selectedArrow.endIdx === endIdx && sess.selectedArrow.origIdx === origIdx) {
+        sess.selectedArrow = null;
+      } else {
+        sess.selectedArrow = { endIdx: endIdx, origIdx: origIdx };
+      }
+      renderKyuScoring(wrap, true);
     });
   });
 
@@ -6314,6 +6493,17 @@ function renderKyuScoring(wrap, preserveScroll) {
   wrap.querySelectorAll('.kyu-key[data-kv]').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var val = this.getAttribute('data-kv');
+
+      /* If an arrow is selected, replace its value */
+      if (sess.selectedArrow) {
+        var selIdx = sess.selectedArrow.endIdx * arrowsPerEnd + sess.selectedArrow.origIdx;
+        sess.arrows[selIdx] = val;
+        sess.selectedArrow = null;
+        kyuAutoSave();
+        renderKyuScoring(wrap, true);
+        return;
+      }
+
       var sIdx = ae * arrowsPerEnd;
       /* Find next empty slot in active end */
       var placed = false;
@@ -6341,6 +6531,16 @@ function renderKyuScoring(wrap, preserveScroll) {
 
   /* Backspace */
   document.getElementById('kyuKeyBack').addEventListener('click', function() {
+    /* If an arrow is selected, delete that specific arrow */
+    if (sess.selectedArrow) {
+      var selIdx = sess.selectedArrow.endIdx * arrowsPerEnd + sess.selectedArrow.origIdx;
+      sess.arrows[selIdx] = null;
+      sess.selectedArrow = null;
+      kyuAutoSave();
+      renderKyuScoring(wrap, true);
+      return;
+    }
+
     var curEnd = ae;
     var sIdx = curEnd * arrowsPerEnd;
     /* Find last filled slot in active end */
@@ -6658,6 +6858,196 @@ function drawKyuBarChart(canvas, data, color, unit) {
 }
 
 /* ── Confirm dialog ── */
+/* ── Notes (心得) sub-tab ── */
+function nextKyuNoteHeadingId() {
+  var m = 0; kyuNotes.forEach(function(h) { if (h.id > m) m = h.id; }); return m + 1;
+}
+function nextKyuNoteId(heading) {
+  var m = 0; (heading.notes || []).forEach(function(n) { if (n.id > m) m = n.id; }); return m + 1;
+}
+
+function renderKyuNotesTab() {
+  var html = '<div class="kyu-notes-wrap">';
+  html += '<div class="kyu-section-title"><i class="fas fa-book"></i> 心得筆記</div>';
+
+  if (kyuNotes.length === 0) {
+    html += '<div class="kyu-no-data"><i class="fas fa-feather-alt"></i>尚未有筆記<br>點擊下方建立第一個主題</div>';
+  }
+
+  kyuNotes.forEach(function(heading) {
+    html += '<div class="kyu-heading-card" data-hid="' + heading.id + '">';
+    html += '<div class="kyu-heading-bar" data-heading-toggle="' + heading.id + '">';
+    html += '<div class="kyu-heading-title"><i class="fas fa-chevron-down" style="font-size:11px;"></i> ' + esc(heading.title) + '</div>';
+    html += '<div class="kyu-heading-actions">' +
+      '<button class="kyu-heading-action-btn" data-heading-edit="' + heading.id + '"><i class="fas fa-pen"></i></button>' +
+      '<button class="kyu-heading-action-btn" data-heading-addnote="' + heading.id + '"><i class="fas fa-plus"></i></button>' +
+      '<button class="kyu-heading-action-btn danger" data-heading-del="' + heading.id + '"><i class="fas fa-trash"></i></button>' +
+    '</div>';
+    html += '</div>';
+
+    /* Notes list */
+    html += '<div class="kyu-note-list">';
+    (heading.notes || []).forEach(function(note) {
+      html += '<div class="kyu-note-bubble">' +
+        '<div class="kyu-note-bubble-actions">' +
+          '<button class="kyu-note-bubble-btn" data-note-edit="' + heading.id + ':' + note.id + '"><i class="fas fa-pen"></i></button>' +
+          '<button class="kyu-note-bubble-btn danger" data-note-del="' + heading.id + ':' + note.id + '"><i class="fas fa-trash"></i></button>' +
+        '</div>' +
+        '<div>' + esc(note.text).replace(/\n/g, '<br>') + '</div>' +
+        (note.date ? '<div class="kyu-note-date">' + dateToDisplay(note.date) + '</div>' : '') +
+      '</div>';
+    });
+    if ((heading.notes || []).length === 0) {
+      html += '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px;">尚未有筆記</div>';
+    }
+    html += '</div>';
+    html += '</div>';
+  });
+
+  html += '<div class="kyu-add-heading" id="kyuAddHeading"><i class="fas fa-plus"></i> 新增主題</div>';
+  html += '</div>';
+  return html;
+}
+
+function openKyuHeadingForm(existing) {
+  var overlay = document.createElement('div');
+  overlay.className = 'kyu-modal-overlay';
+  overlay.innerHTML = '<div class="kyu-modal">' +
+    '<h3><i class="fas fa-folder"></i> ' + (existing ? '編輯主題' : '新增主題') + '</h3>' +
+    '<div class="kyu-form-field"><label>主題名稱</label><input type="text" id="kyuHeadingInput" value="' + esc(existing ? existing.title : '') + '" placeholder="如：射型要點"></div>' +
+    '<div class="body-form-actions" style="margin-top:16px;">' +
+      '<button class="body-btn body-btn-secondary" id="kyuHeadingCancel">取消</button>' +
+      '<button class="body-btn body-btn-primary" id="kyuHeadingSave">' + (existing ? '更新' : '新增') + '</button>' +
+    '</div>' +
+  '</div>';
+  document.body.appendChild(overlay);
+  var inp = document.getElementById('kyuHeadingInput');
+  setTimeout(function() { inp.focus(); }, 100);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+  document.getElementById('kyuHeadingCancel').addEventListener('click', function() { overlay.remove(); });
+  document.getElementById('kyuHeadingSave').addEventListener('click', function() {
+    var title = inp.value.trim();
+    if (!title) { showToast('請輸入主題名稱'); return; }
+    if (existing) {
+      var h = kyuNotes.find(function(h) { return h.id === existing.id; });
+      if (h) h.title = title;
+    } else {
+      kyuNotes.push({ id: nextKyuNoteHeadingId(), title: title, notes: [] });
+    }
+    saveKyuLocal();
+    saveKyuNotesToFirestore();
+    overlay.remove();
+    showToast(existing ? '已更新主題' : '已新增主題');
+    renderKyudo();
+  });
+}
+
+function openKyuNoteForm(headingId, existingNote) {
+  var overlay = document.createElement('div');
+  overlay.className = 'kyu-modal-overlay';
+  overlay.innerHTML = '<div class="kyu-modal">' +
+    '<h3><i class="fas fa-sticky-note"></i> ' + (existingNote ? '編輯筆記' : '新增筆記') + '</h3>' +
+    '<div class="kyu-form-field"><label>內容</label><textarea id="kyuNoteInput" rows="5" style="width:100%;min-height:100px;resize:vertical;font-size:14px;padding:10px;border-radius:10px;border:1px solid var(--border-light);background:var(--bg-body);color:var(--text-primary);font-family:inherit;" placeholder="寫下你的心得...">' + esc(existingNote ? existingNote.text : '') + '</textarea></div>' +
+    '<div class="body-form-actions" style="margin-top:16px;">' +
+      '<button class="body-btn body-btn-secondary" id="kyuNoteCancel">取消</button>' +
+      '<button class="body-btn body-btn-primary" id="kyuNoteSave">' + (existingNote ? '更新' : '新增') + '</button>' +
+    '</div>' +
+  '</div>';
+  document.body.appendChild(overlay);
+  var ta = document.getElementById('kyuNoteInput');
+  setTimeout(function() { ta.focus(); }, 100);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+  document.getElementById('kyuNoteCancel').addEventListener('click', function() { overlay.remove(); });
+  document.getElementById('kyuNoteSave').addEventListener('click', function() {
+    var text = ta.value.trim();
+    if (!text) { showToast('請輸入內容'); return; }
+    var heading = kyuNotes.find(function(h) { return h.id === headingId; });
+    if (!heading) { overlay.remove(); return; }
+    if (!heading.notes) heading.notes = [];
+    if (existingNote) {
+      var n = heading.notes.find(function(n) { return n.id === existingNote.id; });
+      if (n) { n.text = text; n.date = todayStr(); }
+    } else {
+      heading.notes.push({ id: nextKyuNoteId(heading), text: text, date: todayStr() });
+    }
+    saveKyuLocal();
+    saveKyuNotesToFirestore();
+    overlay.remove();
+    showToast(existingNote ? '已更新筆記' : '已新增筆記');
+    renderKyudo();
+  });
+}
+
+function bindKyuNotesEvents(wrap) {
+  /* Add heading */
+  var addBtn = document.getElementById('kyuAddHeading');
+  if (addBtn) addBtn.addEventListener('click', function() { openKyuHeadingForm(null); });
+
+  /* Edit heading */
+  wrap.querySelectorAll('[data-heading-edit]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var id = parseInt(this.getAttribute('data-heading-edit'));
+      var h = kyuNotes.find(function(h) { return h.id === id; });
+      if (h) openKyuHeadingForm(h);
+    });
+  });
+
+  /* Delete heading */
+  wrap.querySelectorAll('[data-heading-del]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var id = parseInt(this.getAttribute('data-heading-del'));
+      showKyuConfirm('確定刪除此主題及所有筆記？', function() {
+        kyuNotes = kyuNotes.filter(function(h) { return h.id !== id; });
+        saveKyuLocal();
+        saveKyuNotesToFirestore();
+        showToast('已刪除主題');
+        renderKyudo();
+      });
+    });
+  });
+
+  /* Add note under heading */
+  wrap.querySelectorAll('[data-heading-addnote]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var id = parseInt(this.getAttribute('data-heading-addnote'));
+      openKyuNoteForm(id, null);
+    });
+  });
+
+  /* Edit note */
+  wrap.querySelectorAll('[data-note-edit]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var parts = this.getAttribute('data-note-edit').split(':');
+      var hid = parseInt(parts[0]), nid = parseInt(parts[1]);
+      var h = kyuNotes.find(function(h) { return h.id === hid; });
+      if (!h) return;
+      var n = (h.notes || []).find(function(n) { return n.id === nid; });
+      if (n) openKyuNoteForm(hid, n);
+    });
+  });
+
+  /* Delete note */
+  wrap.querySelectorAll('[data-note-del]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var parts = this.getAttribute('data-note-del').split(':');
+      var hid = parseInt(parts[0]), nid = parseInt(parts[1]);
+      showKyuConfirm('確定刪除此筆記？', function() {
+        var h = kyuNotes.find(function(h) { return h.id === hid; });
+        if (h) h.notes = (h.notes || []).filter(function(n) { return n.id !== nid; });
+        saveKyuLocal();
+        saveKyuNotesToFirestore();
+        showToast('已刪除筆記');
+        renderKyudo();
+      });
+    });
+  });
+}
+
 function showKyuConfirm(msg, onOk) {
   var overlay = document.createElement('div');
   overlay.className = 'body-del-confirm';
