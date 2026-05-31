@@ -5882,7 +5882,6 @@ function startKyuSession(tpl) {
   kyuActiveSession = {
     tpl: tpl,
     arrows: new Array(totalArrows).fill(null),
-    currentIdx: 0,
     date: todayStr()
   };
   renderKyudo();
@@ -5933,16 +5932,38 @@ function renderKyuScoring(wrap) {
   html += '<div class="kyu-total-item"><div class="kyu-total-value">' + filledCount + '/' + totalArrows + '</div><div class="kyu-total-label">已射</div></div>';
   html += '</div>';
 
-  /* Ends */
+  /* Each end: arrows display + inline score toggle buttons */
   for (var e = 0; e < ends; e++) {
+    var startIdx = e * arrowsPerEnd;
+    var endFilledCount = 0;
+    for (var ca = 0; ca < arrowsPerEnd; ca++) {
+      if (sess.arrows[startIdx + ca] !== null) endFilledCount++;
+    }
+    var endFull = endFilledCount >= arrowsPerEnd;
+    var endScore = 0;
+    var endHits = 0;
+    for (var cs = 0; cs < arrowsPerEnd; cs++) {
+      var cv = sess.arrows[startIdx + cs];
+      if (cv !== null) { endScore += cv; if (cv > 0) endHits++; }
+    }
+
     html += '<div class="kyu-end-block">';
-    html += '<div class="kyu-end-label">第 ' + (e + 1) + ' 回</div>';
+
+    /* End header with label + subtotal */
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">';
+    html += '<div class="kyu-end-label" style="margin-bottom:0;">第 ' + (e + 1) + ' 回</div>';
+    if (endFilledCount > 0) {
+      var subText = isHM ? (endHits + '/' + endFilledCount + ' 中') : (endScore + ' 分');
+      html += '<div style="font-size:12px;font-weight:700;color:var(--gold);">' + subText + '</div>';
+    }
+    html += '</div>';
+
+    /* Arrows display row */
     html += '<div class="kyu-arrows-grid">';
     for (var a = 0; a < arrowsPerEnd; a++) {
-      var idx = e * arrowsPerEnd + a;
+      var idx = startIdx + a;
       var val = sess.arrows[idx];
       var cls = 'kyu-arrow-cell';
-      if (idx === sess.currentIdx) cls += ' active';
       if (val !== null) {
         if (isHM) { cls += val > 0 ? ' hit' : ' miss'; }
         else { cls += ' filled'; }
@@ -5950,28 +5971,40 @@ function renderKyuScoring(wrap) {
       var display = '';
       if (val !== null) {
         display = isHM ? (val > 0 ? '中' : '外') : String(val);
+      } else {
+        display = '<span style="color:var(--text-muted);font-size:11px;">' + (a + 1) + '</span>';
       }
-      html += '<div class="' + cls + '" data-arrow-idx="' + idx + '">' + display + '</div>';
+      html += '<div class="' + cls + '">' + display + '</div>';
     }
-    html += '</div></div>';
-  }
+    html += '</div>';
 
-  /* Input buttons */
-  html += '<div class="kyu-score-input-area">';
-  html += '<div class="kyu-score-input-label">第 ' + (sess.currentIdx + 1) + ' 箭</div>';
-  html += '<div class="kyu-score-btns">';
-  if (isHM) {
-    html += '<button class="kyu-score-btn hit-btn" data-score="1">中</button>';
-    html += '<button class="kyu-score-btn miss-btn" data-score="0">外</button>';
-  } else {
-    var max = tpl.maxPoints || 10;
-    for (var p = 0; p <= max; p++) {
-      html += '<button class="kyu-score-btn" data-score="' + p + '">' + p + '</button>';
+    /* Inline score toggle buttons for this end */
+    if (!endFull) {
+      html += '<div style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--border-light);">';
+      html += '<div style="font-size:10px;color:var(--text-muted);margin-bottom:6px;text-align:center;">第 ' + (endFilledCount + 1) + ' 箭</div>';
+      html += '<div class="kyu-score-btns">';
+      if (isHM) {
+        html += '<button class="kyu-score-btn hit-btn" data-end="' + e + '" data-sv="1">中</button>';
+        html += '<button class="kyu-score-btn miss-btn" data-end="' + e + '" data-sv="0">外</button>';
+      } else {
+        var max = tpl.maxPoints || 10;
+        for (var p = 0; p <= max; p++) {
+          html += '<button class="kyu-score-btn" data-end="' + e + '" data-sv="' + p + '">' + p + '</button>';
+        }
+      }
+      html += '</div>';
+      html += '</div>';
     }
+
+    /* Undo button for this end (if any arrows filled) */
+    if (endFilledCount > 0) {
+      html += '<div style="margin-top:6px;text-align:center;">' +
+        '<button class="kyu-score-btn kyu-end-undo" data-end="' + e + '" style="font-size:11px;min-width:50px;color:var(--text-muted);padding:6px 12px;"><i class="fas fa-undo"></i> 撤銷</button>' +
+      '</div>';
+    }
+
+    html += '</div>';
   }
-  html += '</div>';
-  html += '<div style="margin-top:8px;"><button class="kyu-score-btn" data-score="undo" style="font-size:12px;min-width:60px;color:var(--text-muted);"><i class="fas fa-undo"></i> 撤銷</button></div>';
-  html += '</div>';
 
   /* Save / discard */
   html += '<div class="kyu-save-bar">' +
@@ -5993,32 +6026,33 @@ function renderKyuScoring(wrap) {
     sess.date = this.value;
   });
 
-  /* Arrow cell clicks (navigate) */
-  wrap.querySelectorAll('.kyu-arrow-cell').forEach(function(cell) {
-    cell.addEventListener('click', function() {
-      sess.currentIdx = parseInt(this.getAttribute('data-arrow-idx'));
+  /* Score toggle buttons inside each end */
+  wrap.querySelectorAll('.kyu-score-btn[data-end]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var endNum = parseInt(this.getAttribute('data-end'));
+      var sv = parseInt(this.getAttribute('data-sv'));
+      var sIdx = endNum * arrowsPerEnd;
+      /* Find next empty slot in this end */
+      for (var si = 0; si < arrowsPerEnd; si++) {
+        if (sess.arrows[sIdx + si] === null) {
+          sess.arrows[sIdx + si] = sv;
+          break;
+        }
+      }
       renderKyuScoring(wrap);
     });
   });
 
-  /* Score buttons */
-  wrap.querySelectorAll('.kyu-score-btn').forEach(function(btn) {
+  /* Undo per end */
+  wrap.querySelectorAll('.kyu-end-undo').forEach(function(btn) {
     btn.addEventListener('click', function() {
-      var sv = this.getAttribute('data-score');
-      if (sv === 'undo') {
-        /* Go back one step */
-        if (sess.currentIdx > 0) {
-          sess.currentIdx--;
-          sess.arrows[sess.currentIdx] = null;
-        } else {
-          sess.arrows[0] = null;
-        }
-      } else {
-        var score = parseInt(sv);
-        sess.arrows[sess.currentIdx] = score;
-        /* Advance to next empty */
-        if (sess.currentIdx < totalArrows - 1) {
-          sess.currentIdx++;
+      var endNum = parseInt(this.getAttribute('data-end'));
+      var sIdx = endNum * arrowsPerEnd;
+      /* Find last filled slot in this end and clear it */
+      for (var si = arrowsPerEnd - 1; si >= 0; si--) {
+        if (sess.arrows[sIdx + si] !== null) {
+          sess.arrows[sIdx + si] = null;
+          break;
         }
       }
       renderKyuScoring(wrap);
